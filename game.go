@@ -1,6 +1,8 @@
 package main
 
-import rl "github.com/gen2brain/raylib-go/raylib"
+import (
+	rl "github.com/gen2brain/raylib-go/raylib"
+)
 
 type Game struct {
 	spritesheet rl.Texture2D
@@ -18,8 +20,9 @@ func (g *Game) unloadGame() {
 
 func (g *Game) render() {
 	rl.BeginDrawing()
-	rl.ClearBackground(rl.RayWhite)
-	rl.DrawText("Hello, World!", 20, 20, 20, rl.Blue)
+	rl.ClearBackground(rl.Black)
+	rl.DrawTexturePro(
+		g.spritesheet, rl.NewRectangle(16, 0, 16, 16), rl.NewRectangle(80, 80, 16, 16), rl.Vector2{X: 0, Y: 0}, 0, rl.White)
 	rl.EndDrawing()
 }
 

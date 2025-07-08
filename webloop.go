@@ -2,7 +2,18 @@
 
 package main
 
-import rl "github.com/gen2brain/raylib-go/raylib"
+import (
+	"embed"
+
+	rl "github.com/gen2brain/raylib-go/raylib"
+)
+
+//go:embed assets
+var ASSETS embed.FS
+
+func init() {
+	rl.AddFileSystem(ASSETS)
+}
 
 func (game *Game) run() {
 	var update = func() {
