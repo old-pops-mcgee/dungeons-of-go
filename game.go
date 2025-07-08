@@ -28,6 +28,31 @@ func (g *Game) render() {
 	rl.EndDrawing()
 }
 
-func (g *Game) update() {}
+func (g *Game) update() {
+	g.player.update()
+}
 
-func (g *Game) handleInput() {}
+func (g *Game) handleInput() {
+	switch rl.GetKeyPressed() {
+	case rl.KeyLeft, rl.KeyKp4, rl.KeyH:
+		g.player.x -= 1
+	case rl.KeyRight, rl.KeyKp6, rl.KeyL:
+		g.player.x += 1
+	case rl.KeyUp, rl.KeyKp8, rl.KeyK:
+		g.player.y -= 1
+	case rl.KeyDown, rl.KeyKp2, rl.KeyJ:
+		g.player.y += 1
+	case rl.KeyY, rl.KeyKp7:
+		g.player.y -= 1
+		g.player.x -= 1
+	case rl.KeyU, rl.KeyKp9:
+		g.player.y -= 1
+		g.player.x += 1
+	case rl.KeyB, rl.KeyKp1:
+		g.player.y += 1
+		g.player.x -= 1
+	case rl.KeyN, rl.KeyKp3:
+		g.player.y += 1
+		g.player.x += 1
+	}
+}

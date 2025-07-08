@@ -51,3 +51,9 @@ func (de *DrawableEntity) render() {
 		de.tint,
 	)
 }
+
+func (de *DrawableEntity) update() {
+	// Clamp the player position to the screen
+	de.x = int(rl.Clamp(float32(de.x), 0, float32(WindowGridWidth-1)))
+	de.y = int(rl.Clamp(float32(de.y), 0, float32(WindowGridHeight-1)))
+}
