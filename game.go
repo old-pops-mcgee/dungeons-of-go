@@ -6,12 +6,15 @@ import (
 
 type Game struct {
 	spritesheet rl.Texture2D
+	player      DrawableEntity
 }
 
 func initGame() Game {
-	return Game{
+	game := Game{
 		spritesheet: rl.LoadTexture("assets/16x16-RogueYun-AgmEdit.png"),
 	}
+	game.player = initDrawableEntity(&game, 4, 4, 0, 4, 2, rl.White)
+	return game
 }
 
 func (g *Game) unloadGame() {
@@ -21,8 +24,7 @@ func (g *Game) unloadGame() {
 func (g *Game) render() {
 	rl.BeginDrawing()
 	rl.ClearBackground(rl.Black)
-	rl.DrawTexturePro(
-		g.spritesheet, rl.NewRectangle(16, 0, 16, 16), rl.NewRectangle(80, 80, 16, 16), rl.Vector2{X: 0, Y: 0}, 0, rl.White)
+	g.player.render()
 	rl.EndDrawing()
 }
 
