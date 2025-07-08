@@ -13,7 +13,7 @@ func initGame() Game {
 	game := Game{
 		spritesheet: rl.LoadTexture("assets/16x16-RogueYun-AgmEdit.png"),
 	}
-	game.player = initDrawableEntity(&game, 4, 4, 0, 4, 2, rl.White)
+	game.player = initDrawableEntity(&game, 4, 4, 0, 4, Scale, rl.White)
 	return game
 }
 
