@@ -33,4 +33,14 @@ My goal is to create a distinct branch for each chapter of the tutorial, so that
 I also plan to document my journey at https://github.com/old-pops-mcgee/dungeons-of-go/wiki - with a wiki page for each chapter, so that those following along don't need to do the same mental calculus to translate the original wiki into Go
 
 ## Installation instructions
-TBD
+I've included a Makefile to easily build both the desktop and web versions of the game
+
+### For Desktop
+From the root directory, run `make build`. This creates a desktop binary (by default, for linux/amd64 - you can edit the Makefile to target different architectures) called `app`. Run `app` and you have the game!
+
+### For Web
+For this, you must first ensure you've installed Raylib-Go-Wasm from https://github.com/BrownNPC/Raylib-Go-Wasm . I have not included my local clone of the package, but the makefile assumes the clone is present at the root. Once the clone is present, run the following _once_:
+`cp "$(go env GOROOT)/lib/wasm/wasm_exec.js" ./Raylib-Go-Wasm/index/wasm_exec.js`
+`go build ./Raylib-Go-Wasm/server/server.go`
+
+Next, run `make build-web`. This will set up the web application as a WASM binary, and put it in the right location within `Raylib-Go-Wasm`. With that done, run `./server` - your game should be installed and running off a local web server on localhost:8080.
