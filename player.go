@@ -1,6 +1,10 @@
 package main
 
-import "image/color"
+import (
+	"image/color"
+
+	rl "github.com/gen2brain/raylib-go/raylib"
+)
 
 type Player struct {
 	game              *Game
@@ -8,7 +12,7 @@ type Player struct {
 	movementActionSet map[MovementAction]bool
 }
 
-func initPlayer(g *Game, m MapCoords, gl Glyph, t color.RGBA) Player {
+func initPlayer(g *Game, m rl.Vector2, gl Glyph, t color.RGBA) Player {
 	return Player{
 		game:              g,
 		drawableEntity:    initDrawableEntity(g, m, gl, t),
@@ -21,25 +25,33 @@ func (p *Player) render() {
 }
 
 func (p *Player) update() {
-	// Process movements from movement action
+	var movementDelta MovementDelta
+
+	// Process movements from each movement action
 	for movement := range p.movementActionSet {
-		movementDelta := MOVEMENT_DELTAS[movement]
-
-		// Find the target coordinates
-		targetCoords := p.drawableEntity.mapCoords
-		targetCoords.X += movementDelta.dx
-		targetCoords.Y += movementDelta.dy
-
-		if p.isValidMovementTarget(targetCoords) {
-			p.drawableEntity.mapCoords = targetCoords
-		}
+		tempMovementDelta := MOVEMENT_DELTAS[movement]
+		movementDelta.dx += tempMovementDelta.dx
+		movementDelta.dy += tempMovementDelta.dy
 
 		// Clear the movement from the action set
 		delete(p.movementActionSet, movement)
 	}
+
+	// Clamp the movement deltas to ensure we don't process to big a step
+	movementDelta.dx = int(rl.Clamp(float32(movementDelta.dx), -1, 1))
+	movementDelta.dy = int(rl.Clamp(float32(movementDelta.dy), -1, 1))
+
+	// Find the target coordinates
+	targetCoords := p.drawableEntity.mapCoords
+	targetCoords.X += float32(movementDelta.dx)
+	targetCoords.Y += float32(movementDelta.dy)
+
+	if p.isValidMovementTarget(targetCoords) {
+		p.drawableEntity.mapCoords = targetCoords
+	}
 }
 
-func (p *Player) isValidMovementTarget(targetCoords MapCoords) bool {
+func (p *Player) isValidMovementTarget(targetCoords rl.Vector2) bool {
 	// Validate the target position is in bounds
 	if !p.game.gameMap.IsInBounds(targetCoords) {
 		return false
