@@ -5,9 +5,10 @@ package main
 import rl "github.com/gen2brain/raylib-go/raylib"
 
 // Define desktop values
-var WindowGridWidth int = 80
-var WindowGridHeight int = 50
-var Scale int = 2
+var GridWidth int = 80
+var GridHeight int = 50
+var WindowWidth int = 2 * GridWidth * BASE_SPRITE_WIDTH
+var WindowHeight int = 2 * GridHeight * BASE_SPRITE_HEIGHT
 
 func (game *Game) run() {
 	for !rl.WindowShouldClose() {
