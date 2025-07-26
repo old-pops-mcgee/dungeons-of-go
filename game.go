@@ -10,6 +10,7 @@ type Game struct {
 	spritesheet                rl.Texture2D
 	player                     Player
 	playerInputCooldownCounter int
+	gameMap                    GameMap
 }
 
 func initGame() Game {
@@ -18,6 +19,7 @@ func initGame() Game {
 		playerInputCooldownCounter: PLAYER_INPUT_COOLDOWN,
 	}
 	game.player = initPlayer(&game, 4, 4, 0, 4, Scale, rl.White)
+	game.gameMap = NewGameMap(WindowGridWidth, WindowGridHeight)
 	return game
 }
 
