@@ -2,8 +2,6 @@ package main
 
 import (
 	"slices"
-
-	rl "github.com/gen2brain/raylib-go/raylib"
 )
 
 type GameMap struct {
@@ -48,6 +46,6 @@ func (g GameMap) IsInBounds(coords MapCoords) bool {
 
 func (g GameMap) render() {
 	for index, tile := range g.Tiles {
-		RenderTileBasedGraphic(g.game, tile.DarkGraphic.TileGlyph, g.IndexToCoord(index), Scale, rl.White)
+		RenderTileBasedGraphic(g.game, tile.DarkGraphic.TileGlyph, g.IndexToCoord(index), Scale, tile.DarkGraphic.FGColor)
 	}
 }
