@@ -22,10 +22,7 @@ func NewGameMap(g *Game, width int, height int) GameMap {
 		Width:  width,
 		Height: height,
 	}
-	gameMap.Tiles = slices.Repeat([]Tile{Floor}, width*height)
-	gameMap.Tiles[5] = Wall
-	gameMap.Tiles[5+width] = Wall
-	gameMap.Tiles[5+2*width] = Wall
+	gameMap.Tiles = slices.Repeat([]Tile{Wall}, width*height)
 	return gameMap
 }
 
