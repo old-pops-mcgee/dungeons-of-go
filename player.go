@@ -24,13 +24,28 @@ func (p *Player) update() {
 	// Process movements from movement action
 	for movement := range p.movementActionSet {
 		movementDelta := MOVEMENT_DELTAS[movement]
-		p.drawableEntity.mapCoords.X += movementDelta.dx
-		p.drawableEntity.mapCoords.Y += movementDelta.dy
+
+		// Find the target coordinates
+		targetCoords := p.drawableEntity.mapCoords
+		targetCoords.X += movementDelta.dx
+		targetCoords.Y += movementDelta.dy
+
+		if p.isValidMovementTarget(targetCoords) {
+			p.drawableEntity.mapCoords = targetCoords
+		}
 
 		// Clear the movement from the action set
 		delete(p.movementActionSet, movement)
 	}
+}
 
-	// Clamp the position of the player's drawable entity
-	p.drawableEntity.update()
+func (p *Player) isValidMovementTarget(targetCoords MapCoords) bool {
+	// Validate the target position is in bounds
+	if !p.game.gameMap.IsInBounds(targetCoords) {
+		return false
+	}
+
+	// Validate the target position is walkable, assuming it's in bounds
+	targetIndex := p.game.gameMap.CoordToIndex(targetCoords)
+	return p.game.gameMap.Tiles[targetIndex].Walkable
 }

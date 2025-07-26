@@ -41,7 +41,7 @@ func (g GameMap) IndexToCoord(index int) MapCoords {
 }
 
 func (g GameMap) IsInBounds(coords MapCoords) bool {
-	return g.CoordToIndex(coords) < len(g.Tiles)
+	return coords.X >= 0 && coords.X < g.Width && coords.Y >= 0 && coords.Y < g.Height
 }
 
 func (g GameMap) render() {
