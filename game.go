@@ -24,7 +24,7 @@ func initGame() Game {
 	game.player = initPlayer(&game, MapCoords{X: 4, Y: 4}, PlayerGlyph, rl.White)
 	game.gameMap = NewGameMap(&game, WindowGridWidth, WindowGridHeight)
 	game.camera = rl.Camera2D{
-		Target:   rl.Vector2{X: float32(game.player.drawableEntity.mapCoords.X * BASE_SPRITE_WIDTH), Y: float32(game.player.drawableEntity.mapCoords.Y * BASE_SPRITE_HEIGHT)},
+		Target:   game.getCameraTarget(),
 		Offset:   rl.Vector2{X: float32(rl.GetScreenWidth()) / 2, Y: float32(rl.GetScreenHeight()) / 2},
 		Rotation: 0,
 		Zoom:     cameraZoom,
@@ -51,7 +51,7 @@ func (g *Game) update() {
 	g.player.update()
 
 	// Update the camera
-	g.camera.Target = rl.Vector2{X: float32(g.player.drawableEntity.mapCoords.X * BASE_SPRITE_WIDTH), Y: float32(g.player.drawableEntity.mapCoords.Y * BASE_SPRITE_HEIGHT)}
+	g.camera.Target = g.getCameraTarget()
 
 	// Update the cooldown timer
 	g.playerInputCooldownCounter = max(0, g.playerInputCooldownCounter-1)
@@ -73,4 +73,8 @@ func (g *Game) handleInput() {
 		}
 	}
 
+}
+
+func (g *Game) getCameraTarget() rl.Vector2 {
+	return rl.Vector2{X: float32(g.player.drawableEntity.mapCoords.X * BASE_SPRITE_WIDTH), Y: float32(g.player.drawableEntity.mapCoords.Y * BASE_SPRITE_HEIGHT)}
 }
