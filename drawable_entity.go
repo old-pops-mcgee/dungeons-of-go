@@ -10,22 +10,20 @@ const BASE_SPRITE_WIDTH int = 16
 const BASE_SPRITE_HEIGHT int = 16
 
 type DrawableEntity struct {
-	game  *Game
-	x     int
-	y     int
-	glyph Glyph
-	scale int
-	tint  color.RGBA
+	game      *Game
+	mapCoords MapCoords
+	glyph     Glyph
+	scale     int
+	tint      color.RGBA
 }
 
-func initDrawableEntity(g *Game, x int, y int, gl Glyph, s int, t color.RGBA) DrawableEntity {
+func initDrawableEntity(g *Game, m MapCoords, gl Glyph, s int, t color.RGBA) DrawableEntity {
 	return DrawableEntity{
-		game:  g,
-		x:     x,
-		y:     y,
-		glyph: gl,
-		scale: s,
-		tint:  t,
+		game:      g,
+		mapCoords: m,
+		glyph:     gl,
+		scale:     s,
+		tint:      t,
 	}
 }
 
@@ -39,8 +37,8 @@ func (de *DrawableEntity) render() {
 			float32(BASE_SPRITE_HEIGHT),
 		),
 		rl.NewRectangle(
-			float32(de.x*de.scale*BASE_SPRITE_WIDTH),
-			float32(de.y*de.scale*BASE_SPRITE_HEIGHT),
+			float32(de.mapCoords.X*de.scale*BASE_SPRITE_WIDTH),
+			float32(de.mapCoords.Y*de.scale*BASE_SPRITE_HEIGHT),
 			float32(BASE_SPRITE_WIDTH*de.scale),
 			float32(BASE_SPRITE_HEIGHT*de.scale),
 		),
@@ -52,6 +50,6 @@ func (de *DrawableEntity) render() {
 
 func (de *DrawableEntity) update() {
 	// Clamp the player position to the screen
-	de.x = int(rl.Clamp(float32(de.x), 0, float32(WindowGridWidth-1)))
-	de.y = int(rl.Clamp(float32(de.y), 0, float32(WindowGridHeight-1)))
+	de.mapCoords.X = int(rl.Clamp(float32(de.mapCoords.X), 0, float32(WindowGridWidth-1)))
+	de.mapCoords.Y = int(rl.Clamp(float32(de.mapCoords.Y), 0, float32(WindowGridHeight-1)))
 }

@@ -18,7 +18,7 @@ func initGame() Game {
 		spritesheet:                rl.LoadTexture("assets/16x16-RogueYun-AgmEdit.png"),
 		playerInputCooldownCounter: PLAYER_INPUT_COOLDOWN,
 	}
-	game.player = initPlayer(&game, 4, 4, 0, 4, Scale, rl.White)
+	game.player = initPlayer(&game, MapCoords{X: 4, Y: 4}, PlayerGlyph, Scale, rl.White)
 	game.gameMap = NewGameMap(WindowGridWidth, WindowGridHeight)
 	return game
 }
