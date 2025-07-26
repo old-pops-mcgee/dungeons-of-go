@@ -21,7 +21,7 @@ func initGame() Game {
 		spritesheet:                rl.LoadTexture("assets/16x16-RogueYun-AgmEdit.png"),
 		playerInputCooldownCounter: PLAYER_INPUT_COOLDOWN,
 	}
-	game.player = initPlayer(&game, MapCoords{X: 25, Y: 20}, PlayerGlyph, rl.White)
+	game.player = initPlayer(&game, rl.Vector2{X: 25, Y: 20}, PlayerGlyph, rl.White)
 	game.gameMap = GenerateDungeon(&game, GridWidth, GridHeight)
 	game.camera = rl.Camera2D{
 		Target:   game.getCameraTarget(),
@@ -76,5 +76,5 @@ func (g *Game) handleInput() {
 }
 
 func (g *Game) getCameraTarget() rl.Vector2 {
-	return rl.Vector2{X: float32(g.player.drawableEntity.mapCoords.X * BASE_SPRITE_WIDTH), Y: float32(g.player.drawableEntity.mapCoords.Y * BASE_SPRITE_HEIGHT)}
+	return rl.Vector2{X: g.player.drawableEntity.mapCoords.X * float32(BASE_SPRITE_WIDTH), Y: g.player.drawableEntity.mapCoords.Y * float32(BASE_SPRITE_HEIGHT)}
 }

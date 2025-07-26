@@ -1,6 +1,10 @@
 package main
 
-import "image/color"
+import (
+	"image/color"
+
+	rl "github.com/gen2brain/raylib-go/raylib"
+)
 
 type Player struct {
 	game              *Game
@@ -8,7 +12,7 @@ type Player struct {
 	movementActionSet map[MovementAction]bool
 }
 
-func initPlayer(g *Game, m MapCoords, gl Glyph, t color.RGBA) Player {
+func initPlayer(g *Game, m rl.Vector2, gl Glyph, t color.RGBA) Player {
 	return Player{
 		game:              g,
 		drawableEntity:    initDrawableEntity(g, m, gl, t),
@@ -27,8 +31,8 @@ func (p *Player) update() {
 
 		// Find the target coordinates
 		targetCoords := p.drawableEntity.mapCoords
-		targetCoords.X += movementDelta.dx
-		targetCoords.Y += movementDelta.dy
+		targetCoords.X += float32(movementDelta.dx)
+		targetCoords.Y += float32(movementDelta.dy)
 
 		if p.isValidMovementTarget(targetCoords) {
 			p.drawableEntity.mapCoords = targetCoords
@@ -39,7 +43,7 @@ func (p *Player) update() {
 	}
 }
 
-func (p *Player) isValidMovementTarget(targetCoords MapCoords) bool {
+func (p *Player) isValidMovementTarget(targetCoords rl.Vector2) bool {
 	// Validate the target position is in bounds
 	if !p.game.gameMap.IsInBounds(targetCoords) {
 		return false

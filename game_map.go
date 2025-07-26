@@ -2,6 +2,8 @@ package main
 
 import (
 	"slices"
+
+	rl "github.com/gen2brain/raylib-go/raylib"
 )
 
 type GameMap struct {
@@ -9,11 +11,6 @@ type GameMap struct {
 	Tiles  []Tile
 	Width  int
 	Height int
-}
-
-type MapCoords struct {
-	X int
-	Y int
 }
 
 func NewGameMap(g *Game, width int, height int) GameMap {
@@ -26,19 +23,19 @@ func NewGameMap(g *Game, width int, height int) GameMap {
 	return gameMap
 }
 
-func (g GameMap) CoordToIndex(coords MapCoords) int {
-	return coords.Y*g.Width + coords.X
+func (g GameMap) CoordToIndex(coords rl.Vector2) int {
+	return int(coords.Y*float32(g.Width) + coords.X)
 }
 
-func (g GameMap) IndexToCoord(index int) MapCoords {
-	return MapCoords{
-		X: index % g.Width,
-		Y: index / g.Width,
+func (g GameMap) IndexToCoord(index int) rl.Vector2 {
+	return rl.Vector2{
+		X: float32(index % g.Width),
+		Y: float32(index / g.Width),
 	}
 }
 
-func (g GameMap) IsInBounds(coords MapCoords) bool {
-	return coords.X >= 0 && coords.X < g.Width && coords.Y >= 0 && coords.Y < g.Height
+func (g GameMap) IsInBounds(coords rl.Vector2) bool {
+	return coords.X >= 0 && coords.X < float32(g.Width) && coords.Y >= 0 && coords.Y < float32(g.Height)
 }
 
 func (g GameMap) render() {
