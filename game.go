@@ -11,6 +11,7 @@ type Game struct {
 	player                     Player
 	playerInputCooldownCounter int
 	gameMap                    GameMap
+	camera                     rl.Camera2D
 }
 
 func initGame() Game {
@@ -18,8 +19,14 @@ func initGame() Game {
 		spritesheet:                rl.LoadTexture("assets/16x16-RogueYun-AgmEdit.png"),
 		playerInputCooldownCounter: PLAYER_INPUT_COOLDOWN,
 	}
-	game.player = initPlayer(&game, MapCoords{X: 4, Y: 4}, PlayerGlyph, Scale, rl.White)
+	game.player = initPlayer(&game, MapCoords{X: 4, Y: 4}, PlayerGlyph, rl.White)
 	game.gameMap = NewGameMap(&game, WindowGridWidth, WindowGridHeight)
+	game.camera = rl.Camera2D{
+		Target:   rl.Vector2{X: float32(game.player.drawableEntity.mapCoords.X * BASE_SPRITE_WIDTH), Y: float32(game.player.drawableEntity.mapCoords.Y * BASE_SPRITE_HEIGHT)},
+		Offset:   rl.Vector2{X: float32(rl.GetScreenWidth()) / 2, Y: float32(rl.GetScreenHeight()) / 2},
+		Rotation: 0,
+		Zoom:     2,
+	}
 	return game
 }
 
@@ -30,14 +37,19 @@ func (g *Game) unloadGame() {
 func (g *Game) render() {
 	rl.BeginDrawing()
 	rl.ClearBackground(rl.Black)
+	rl.BeginMode2D(g.camera)
 	g.gameMap.render()
 	g.player.render()
+	rl.EndMode2D()
 	rl.EndDrawing()
 }
 
 func (g *Game) update() {
 	// Update the player
 	g.player.update()
+
+	// Update the camera
+	g.camera.Target = rl.Vector2{X: float32(g.player.drawableEntity.mapCoords.X * BASE_SPRITE_WIDTH), Y: float32(g.player.drawableEntity.mapCoords.Y * BASE_SPRITE_HEIGHT)}
 
 	// Update the cooldown timer
 	g.playerInputCooldownCounter = max(0, g.playerInputCooldownCounter-1)

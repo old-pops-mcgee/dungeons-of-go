@@ -46,6 +46,6 @@ func (g GameMap) IsInBounds(coords MapCoords) bool {
 
 func (g GameMap) render() {
 	for index, tile := range g.Tiles {
-		RenderTileBasedGraphic(g.game, tile.DarkGraphic.TileGlyph, g.IndexToCoord(index), Scale, tile.DarkGraphic.FGColor)
+		RenderTileBasedGraphic(g.game, tile.DarkGraphic.TileGlyph, g.IndexToCoord(index), tile.DarkGraphic.FGColor)
 	}
 }

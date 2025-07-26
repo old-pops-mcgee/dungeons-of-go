@@ -8,10 +8,10 @@ type Player struct {
 	movementActionSet map[MovementAction]bool
 }
 
-func initPlayer(g *Game, m MapCoords, gl Glyph, s int, t color.RGBA) Player {
+func initPlayer(g *Game, m MapCoords, gl Glyph, t color.RGBA) Player {
 	return Player{
 		game:              g,
-		drawableEntity:    initDrawableEntity(g, m, gl, s, t),
+		drawableEntity:    initDrawableEntity(g, m, gl, t),
 		movementActionSet: map[MovementAction]bool{},
 	}
 }

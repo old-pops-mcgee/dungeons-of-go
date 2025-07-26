@@ -13,22 +13,20 @@ type DrawableEntity struct {
 	game      *Game
 	mapCoords MapCoords
 	glyph     Glyph
-	scale     int
 	tint      color.RGBA
 }
 
-func initDrawableEntity(g *Game, m MapCoords, gl Glyph, s int, t color.RGBA) DrawableEntity {
+func initDrawableEntity(g *Game, m MapCoords, gl Glyph, t color.RGBA) DrawableEntity {
 	return DrawableEntity{
 		game:      g,
 		mapCoords: m,
 		glyph:     gl,
-		scale:     s,
 		tint:      t,
 	}
 }
 
 func (de *DrawableEntity) render() {
-	RenderTileBasedGraphic(de.game, de.glyph, de.mapCoords, de.scale, de.tint)
+	RenderTileBasedGraphic(de.game, de.glyph, de.mapCoords, de.tint)
 }
 
 func (de *DrawableEntity) update() {

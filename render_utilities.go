@@ -6,7 +6,7 @@ import (
 	rl "github.com/gen2brain/raylib-go/raylib"
 )
 
-func RenderTileBasedGraphic(g *Game, gl Glyph, m MapCoords, scale int, tint color.RGBA) {
+func RenderTileBasedGraphic(g *Game, gl Glyph, m MapCoords, tint color.RGBA) {
 	rl.DrawTexturePro(
 		g.spritesheet,
 		rl.NewRectangle(
@@ -16,10 +16,10 @@ func RenderTileBasedGraphic(g *Game, gl Glyph, m MapCoords, scale int, tint colo
 			float32(BASE_SPRITE_HEIGHT),
 		),
 		rl.NewRectangle(
-			float32(m.X*scale*BASE_SPRITE_WIDTH),
-			float32(m.Y*scale*BASE_SPRITE_HEIGHT),
-			float32(BASE_SPRITE_WIDTH*scale),
-			float32(BASE_SPRITE_HEIGHT*scale),
+			float32(m.X*BASE_SPRITE_WIDTH),
+			float32(m.Y*BASE_SPRITE_HEIGHT),
+			float32(BASE_SPRITE_WIDTH),
+			float32(BASE_SPRITE_HEIGHT),
 		),
 		rl.Vector2{X: 0, Y: 0},
 		0,

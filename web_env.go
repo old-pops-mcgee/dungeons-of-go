@@ -13,7 +13,6 @@ var ASSETS embed.FS
 
 var WindowGridWidth int = 80
 var WindowGridHeight int = 50
-var Scale int = 1
 
 func init() {
 	rl.AddFileSystem(ASSETS)
