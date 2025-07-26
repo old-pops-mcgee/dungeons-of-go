@@ -6,6 +6,8 @@ import (
 
 const PLAYER_INPUT_COOLDOWN int = 6
 
+var cameraZoom float32 = 2
+
 type Game struct {
 	spritesheet                rl.Texture2D
 	player                     Player
@@ -25,7 +27,7 @@ func initGame() Game {
 		Target:   rl.Vector2{X: float32(game.player.drawableEntity.mapCoords.X * BASE_SPRITE_WIDTH), Y: float32(game.player.drawableEntity.mapCoords.Y * BASE_SPRITE_HEIGHT)},
 		Offset:   rl.Vector2{X: float32(rl.GetScreenWidth()) / 2, Y: float32(rl.GetScreenHeight()) / 2},
 		Rotation: 0,
-		Zoom:     2,
+		Zoom:     cameraZoom,
 	}
 	return game
 }
