@@ -32,3 +32,20 @@ func (r *RectangularRoom) GetInnerIndices() []int {
 	}
 	return indices
 }
+
+func GenerateDungeon(g *Game, mapWidth int, mapHeight int) GameMap {
+	gMap := NewGameMap(g, mapWidth, mapHeight)
+
+	r1 := GetNewRectangularRoom(&gMap, MapCoords{X: 20, Y: 15}, 10, 15)
+	r2 := GetNewRectangularRoom(&gMap, MapCoords{X: 35, Y: 15}, 10, 15)
+
+	for _, tileIndex := range r1.GetInnerIndices() {
+		gMap.Tiles[tileIndex] = Floor
+	}
+
+	for _, tileIndex := range r2.GetInnerIndices() {
+		gMap.Tiles[tileIndex] = Floor
+	}
+
+	return gMap
+}
