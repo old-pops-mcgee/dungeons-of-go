@@ -28,24 +28,7 @@ func initDrawableEntity(g *Game, m MapCoords, gl Glyph, s int, t color.RGBA) Dra
 }
 
 func (de *DrawableEntity) render() {
-	rl.DrawTexturePro(
-		de.game.spritesheet,
-		rl.NewRectangle(
-			float32(de.glyph.GX*BASE_SPRITE_WIDTH),
-			float32(de.glyph.GY*BASE_SPRITE_HEIGHT),
-			float32(BASE_SPRITE_WIDTH),
-			float32(BASE_SPRITE_HEIGHT),
-		),
-		rl.NewRectangle(
-			float32(de.mapCoords.X*de.scale*BASE_SPRITE_WIDTH),
-			float32(de.mapCoords.Y*de.scale*BASE_SPRITE_HEIGHT),
-			float32(BASE_SPRITE_WIDTH*de.scale),
-			float32(BASE_SPRITE_HEIGHT*de.scale),
-		),
-		rl.Vector2{X: 0, Y: 0},
-		0,
-		de.tint,
-	)
+	RenderTileBasedGraphic(de.game, de.glyph, de.mapCoords, de.scale, de.tint)
 }
 
 func (de *DrawableEntity) update() {
