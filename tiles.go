@@ -7,9 +7,9 @@ import (
 )
 
 type TileGraphic struct {
-	Glyph   string
-	FGColor color.RGBA
-	BGColor color.RGBA
+	TileGlyph Glyph
+	FGColor   color.RGBA
+	BGColor   color.RGBA
 }
 
 type Tile struct {
@@ -27,6 +27,6 @@ func NewTile(walkable bool, transparent bool, darkGraphic TileGraphic) Tile {
 }
 
 /* Tile types */
-var Floor Tile = NewTile(true, true, TileGraphic{Glyph: ".", FGColor: rl.Gray, BGColor: rl.Black})
+var Floor Tile = NewTile(true, true, TileGraphic{TileGlyph: FloorGlyph, FGColor: rl.Gray, BGColor: rl.Black})
 
-var Wall Tile = NewTile(false, false, TileGraphic{Glyph: "#", FGColor: rl.White, BGColor: rl.Black})
+var Wall Tile = NewTile(false, false, TileGraphic{TileGlyph: WallGlyph, FGColor: rl.White, BGColor: rl.Black})
