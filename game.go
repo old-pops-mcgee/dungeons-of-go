@@ -19,7 +19,7 @@ func initGame() Game {
 		playerInputCooldownCounter: PLAYER_INPUT_COOLDOWN,
 	}
 	game.player = initPlayer(&game, MapCoords{X: 4, Y: 4}, PlayerGlyph, Scale, rl.White)
-	game.gameMap = NewGameMap(WindowGridWidth, WindowGridHeight)
+	game.gameMap = NewGameMap(&game, WindowGridWidth, WindowGridHeight)
 	return game
 }
 
@@ -30,6 +30,7 @@ func (g *Game) unloadGame() {
 func (g *Game) render() {
 	rl.BeginDrawing()
 	rl.ClearBackground(rl.Black)
+	g.gameMap.render()
 	g.player.render()
 	rl.EndDrawing()
 }

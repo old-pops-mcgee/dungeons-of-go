@@ -29,4 +29,4 @@ func NewTile(walkable bool, transparent bool, darkGraphic TileGraphic) Tile {
 /* Tile types */
 var Floor Tile = NewTile(true, true, TileGraphic{TileGlyph: FloorGlyph, FGColor: rl.Gray, BGColor: rl.Black})
 
-var Wall Tile = NewTile(false, false, TileGraphic{TileGlyph: WallGlyph, FGColor: rl.White, BGColor: rl.Black})
+var Wall Tile = NewTile(false, false, TileGraphic{TileGlyph: WallGlyph, FGColor: rl.Brown, BGColor: rl.Black})
