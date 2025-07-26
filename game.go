@@ -22,7 +22,7 @@ func initGame() Game {
 		playerInputCooldownCounter: PLAYER_INPUT_COOLDOWN,
 	}
 	game.player = initPlayer(&game, MapCoords{X: 4, Y: 4}, PlayerGlyph, rl.White)
-	game.gameMap = NewGameMap(&game, WindowGridWidth, WindowGridHeight)
+	game.gameMap = NewGameMap(&game, GridWidth, GridHeight)
 	game.camera = rl.Camera2D{
 		Target:   game.getCameraTarget(),
 		Offset:   rl.Vector2{X: float32(rl.GetScreenWidth()) / 2, Y: float32(rl.GetScreenHeight()) / 2},

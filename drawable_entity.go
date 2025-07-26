@@ -31,6 +31,6 @@ func (de *DrawableEntity) render() {
 
 func (de *DrawableEntity) update() {
 	// Clamp the player position to the screen
-	de.mapCoords.X = int(rl.Clamp(float32(de.mapCoords.X), 0, float32(WindowGridWidth-1)))
-	de.mapCoords.Y = int(rl.Clamp(float32(de.mapCoords.Y), 0, float32(WindowGridHeight-1)))
+	de.mapCoords.X = int(rl.Clamp(float32(de.mapCoords.X), 0, float32(GridWidth-1)))
+	de.mapCoords.Y = int(rl.Clamp(float32(de.mapCoords.Y), 0, float32(GridHeight-1)))
 }

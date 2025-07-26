@@ -11,8 +11,10 @@ import (
 //go:embed assets
 var ASSETS embed.FS
 
-var WindowGridWidth int = 80
-var WindowGridHeight int = 50
+var GridWidth int = 80
+var GridHeight int = 50
+var WindowWidth int = 2 * GridWidth * BASE_SPRITE_WIDTH
+var WindowHeight int = 2 * GridHeight * BASE_SPRITE_HEIGHT
 
 func init() {
 	rl.AddFileSystem(ASSETS)
