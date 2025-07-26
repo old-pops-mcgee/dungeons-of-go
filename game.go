@@ -8,6 +8,10 @@ const PLAYER_INPUT_COOLDOWN int = 6
 
 var cameraZoom float32 = 2
 
+var roomMaxSize int = 10
+var roomMinSize int = 6
+var maxRooms int = 30
+
 type Game struct {
 	spritesheet                rl.Texture2D
 	player                     Player
@@ -22,7 +26,8 @@ func initGame() Game {
 		playerInputCooldownCounter: PLAYER_INPUT_COOLDOWN,
 	}
 	game.player = initPlayer(&game, rl.Vector2{X: 25, Y: 20}, PlayerGlyph, rl.White)
-	game.gameMap = GenerateDungeon(&game, GridWidth, GridHeight)
+	// This function assigns the new dungeon to the game map
+	GenerateDungeon(&game, maxRooms, roomMaxSize, roomMinSize, GridWidth, GridHeight)
 	game.camera = rl.Camera2D{
 		Target:   game.getCameraTarget(),
 		Offset:   rl.Vector2{X: float32(rl.GetScreenWidth()) / 2, Y: float32(rl.GetScreenHeight()) / 2},
