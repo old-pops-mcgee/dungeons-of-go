@@ -13,8 +13,10 @@ var ASSETS embed.FS
 
 var GridWidth int = 80
 var GridHeight int = 50
-var WindowWidth int = 2 * GridWidth * BASE_SPRITE_WIDTH
-var WindowHeight int = 2 * GridHeight * BASE_SPRITE_HEIGHT
+var WindowWidth int = GridWidth * BASE_SPRITE_WIDTH
+var WindowHeight int = GridHeight * BASE_SPRITE_HEIGHT
+
+const PLAYER_INPUT_COOLDOWN int = 1
 
 func init() {
 	rl.AddFileSystem(ASSETS)

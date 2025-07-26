@@ -4,8 +4,6 @@ import (
 	rl "github.com/gen2brain/raylib-go/raylib"
 )
 
-const PLAYER_INPUT_COOLDOWN int = 6
-
 var cameraZoom float32 = 2
 
 var roomMaxSize int = 10
