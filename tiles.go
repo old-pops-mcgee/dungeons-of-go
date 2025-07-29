@@ -28,6 +28,8 @@ func NewTile(walkable bool, transparent bool, darkGraphic TileGraphic, lightGrap
 	}
 }
 
+var Shroud TileGraphic = TileGraphic{TileGlyph: BoxGlyph, FGColor: rl.Gray, BGColor: rl.Black}
+
 /* Tile types */
 var Floor Tile = NewTile(
 	true,
