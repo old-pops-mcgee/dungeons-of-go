@@ -48,6 +48,12 @@ func (g *GameMap) IsOpaque(X, Y int) bool {
 
 func (g *GameMap) render() {
 	for index, tile := range g.Tiles {
-		RenderTileBasedGraphic(g.game, tile.DarkGraphic.TileGlyph, g.IndexToCoord(index), tile.DarkGraphic.FGColor)
+		mapCoords := g.IndexToCoord(index)
+		if g.game.FOVCalc.IsVisible(int(mapCoords.X), int(mapCoords.Y)) {
+			RenderTileBasedGraphic(g.game, tile.LightGraphic.TileGlyph, mapCoords, tile.LightGraphic.FGColor)
+			g.ExploredTiles[index] = true
+		} else if g.ExploredTiles[index] {
+			RenderTileBasedGraphic(g.game, tile.DarkGraphic.TileGlyph, mapCoords, tile.DarkGraphic.FGColor)
+		}
 	}
 }
