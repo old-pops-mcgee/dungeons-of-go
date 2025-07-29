@@ -38,8 +38,8 @@ func (g *GameMap) IndexToCoord(index int) rl.Vector2 {
 	}
 }
 
-func (g *GameMap) IsInBounds(coords rl.Vector2) bool {
-	return coords.X >= 0 && coords.X < float32(g.Width) && coords.Y >= 0 && coords.Y < float32(g.Height)
+func (g *GameMap) InBounds(X, Y int) bool {
+	return X >= 0 && X < g.Width && Y >= 0 && Y < g.Height
 }
 
 func (g *GameMap) render() {

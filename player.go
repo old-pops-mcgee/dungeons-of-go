@@ -53,7 +53,7 @@ func (p *Player) update() {
 
 func (p *Player) isValidMovementTarget(targetCoords rl.Vector2) bool {
 	// Validate the target position is in bounds
-	if !p.game.gameMap.IsInBounds(targetCoords) {
+	if !p.game.gameMap.InBounds(int(targetCoords.X), int(targetCoords.Y)) {
 		return false
 	}
 
