@@ -13,20 +13,32 @@ type TileGraphic struct {
 }
 
 type Tile struct {
-	Walkable    bool
-	Transparent bool
-	DarkGraphic TileGraphic
+	Walkable     bool
+	Transparent  bool
+	DarkGraphic  TileGraphic
+	LightGraphic TileGraphic
 }
 
-func NewTile(walkable bool, transparent bool, darkGraphic TileGraphic) Tile {
+func NewTile(walkable bool, transparent bool, darkGraphic TileGraphic, lightGraphic TileGraphic) Tile {
 	return Tile{
-		Walkable:    walkable,
-		Transparent: transparent,
-		DarkGraphic: darkGraphic,
+		Walkable:     walkable,
+		Transparent:  transparent,
+		DarkGraphic:  darkGraphic,
+		LightGraphic: lightGraphic,
 	}
 }
 
 /* Tile types */
-var Floor Tile = NewTile(true, true, TileGraphic{TileGlyph: FloorGlyph, FGColor: rl.Gray, BGColor: rl.Black})
+var Floor Tile = NewTile(
+	true,
+	true,
+	TileGraphic{TileGlyph: FloorGlyph, FGColor: rl.Gray, BGColor: rl.Black},
+	TileGraphic{TileGlyph: FloorGlyph, FGColor: rl.LightGray, BGColor: rl.DarkGray},
+)
 
-var Wall Tile = NewTile(false, false, TileGraphic{TileGlyph: WallGlyph, FGColor: rl.Brown, BGColor: rl.Black})
+var Wall Tile = NewTile(
+	false,
+	false,
+	TileGraphic{TileGlyph: WallGlyph, FGColor: rl.DarkBrown, BGColor: rl.Black},
+	TileGraphic{TileGlyph: WallGlyph, FGColor: rl.Brown, BGColor: rl.DarkGray},
+)
