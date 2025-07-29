@@ -56,6 +56,9 @@ func (g *Game) update() {
 	// Update the player
 	g.player.update()
 
+	// Update the FOV
+	g.FOVCalc.Compute(&g.gameMap, int(g.player.drawableEntity.mapCoords.X), int(g.player.drawableEntity.mapCoords.Y), g.player.viewRadius)
+
 	// Update the camera
 	g.camera.Target = g.getCameraTarget()
 

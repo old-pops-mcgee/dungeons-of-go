@@ -8,6 +8,7 @@ import (
 
 type Player struct {
 	game              *Game
+	viewRadius        int
 	drawableEntity    DrawableEntity
 	movementActionSet map[MovementAction]bool
 }
@@ -15,6 +16,7 @@ type Player struct {
 func initPlayer(g *Game, m rl.Vector2, gl Glyph, t color.RGBA) Player {
 	return Player{
 		game:              g,
+		viewRadius:        6,
 		drawableEntity:    initDrawableEntity(g, m, gl, t),
 		movementActionSet: map[MovementAction]bool{},
 	}
