@@ -7,10 +7,12 @@ import (
 )
 
 type GameMap struct {
-	game   *Game
-	Tiles  []Tile
-	Width  int
-	Height int
+	game          *Game
+	Tiles         []Tile
+	VisibleTiles  []bool
+	ExploredTiles []bool
+	Width         int
+	Height        int
 }
 
 func NewGameMap(g *Game, width int, height int) GameMap {
@@ -20,6 +22,8 @@ func NewGameMap(g *Game, width int, height int) GameMap {
 		Height: height,
 	}
 	gameMap.Tiles = slices.Repeat([]Tile{Wall}, width*height)
+	gameMap.VisibleTiles = slices.Repeat([]bool{false}, width*height)
+	gameMap.ExploredTiles = slices.Repeat([]bool{false}, width*height)
 	return gameMap
 }
 
