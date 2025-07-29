@@ -28,19 +28,19 @@ func NewTile(walkable bool, transparent bool, darkGraphic TileGraphic, lightGrap
 	}
 }
 
-var Shroud TileGraphic = TileGraphic{TileGlyph: BoxGlyph, FGColor: rl.Gray, BGColor: rl.Black}
+var Shroud TileGraphic = TileGraphic{TileGlyph: BoxGlyph, FGColor: rl.Black, BGColor: rl.Black}
 
 /* Tile types */
 var Floor Tile = NewTile(
 	true,
 	true,
 	TileGraphic{TileGlyph: FloorGlyph, FGColor: rl.Gray, BGColor: rl.Black},
-	TileGraphic{TileGlyph: FloorGlyph, FGColor: rl.LightGray, BGColor: rl.DarkGray},
+	TileGraphic{TileGlyph: FloorGlyph, FGColor: rl.RayWhite, BGColor: rl.Black},
 )
 
 var Wall Tile = NewTile(
 	false,
 	false,
 	TileGraphic{TileGlyph: WallGlyph, FGColor: rl.DarkBrown, BGColor: rl.Black},
-	TileGraphic{TileGlyph: WallGlyph, FGColor: rl.Brown, BGColor: rl.DarkGray},
+	TileGraphic{TileGlyph: WallGlyph, FGColor: rl.Brown, BGColor: rl.Black},
 )
