@@ -42,6 +42,10 @@ func (g *GameMap) InBounds(X, Y int) bool {
 	return X >= 0 && X < g.Width && Y >= 0 && Y < g.Height
 }
 
+func (g *GameMap) IsOpaque(X, Y int) bool {
+	return !g.Tiles[g.CoordToIndex(rl.Vector2{X: float32(X), Y: float32(Y)})].Transparent
+}
+
 func (g *GameMap) render() {
 	for index, tile := range g.Tiles {
 		RenderTileBasedGraphic(g.game, tile.DarkGraphic.TileGlyph, g.IndexToCoord(index), tile.DarkGraphic.FGColor)
