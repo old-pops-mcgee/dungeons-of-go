@@ -2,6 +2,7 @@ package main
 
 import (
 	rl "github.com/gen2brain/raylib-go/raylib"
+	fov "github.com/norendren/go-fov/fov"
 )
 
 var cameraZoom float32 = 2
@@ -16,6 +17,7 @@ type Game struct {
 	playerInputCooldownCounter int
 	gameMap                    GameMap
 	camera                     rl.Camera2D
+	FOVCalc                    *fov.View
 }
 
 func initGame() Game {
@@ -32,6 +34,7 @@ func initGame() Game {
 		Rotation: 0,
 		Zoom:     cameraZoom,
 	}
+	game.FOVCalc = fov.New()
 	return game
 }
 
@@ -52,6 +55,9 @@ func (g *Game) render() {
 func (g *Game) update() {
 	// Update the player
 	g.player.update()
+
+	// Update the FOV
+	g.FOVCalc.Compute(&g.gameMap, int(g.player.drawableEntity.mapCoords.X), int(g.player.drawableEntity.mapCoords.Y), g.player.viewRadius)
 
 	// Update the camera
 	g.camera.Target = g.getCameraTarget()

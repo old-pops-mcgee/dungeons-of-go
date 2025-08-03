@@ -7,10 +7,12 @@ import (
 )
 
 type GameMap struct {
-	game   *Game
-	Tiles  []Tile
-	Width  int
-	Height int
+	game          *Game
+	Tiles         []Tile
+	VisibleTiles  []bool
+	ExploredTiles []bool
+	Width         int
+	Height        int
 }
 
 func NewGameMap(g *Game, width int, height int) GameMap {
@@ -20,6 +22,8 @@ func NewGameMap(g *Game, width int, height int) GameMap {
 		Height: height,
 	}
 	gameMap.Tiles = slices.Repeat([]Tile{Wall}, width*height)
+	gameMap.VisibleTiles = slices.Repeat([]bool{false}, width*height)
+	gameMap.ExploredTiles = slices.Repeat([]bool{false}, width*height)
 	return gameMap
 }
 
@@ -34,12 +38,22 @@ func (g *GameMap) IndexToCoord(index int) rl.Vector2 {
 	}
 }
 
-func (g *GameMap) IsInBounds(coords rl.Vector2) bool {
-	return coords.X >= 0 && coords.X < float32(g.Width) && coords.Y >= 0 && coords.Y < float32(g.Height)
+func (g *GameMap) InBounds(X, Y int) bool {
+	return X >= 0 && X < g.Width && Y >= 0 && Y < g.Height
+}
+
+func (g *GameMap) IsOpaque(X, Y int) bool {
+	return !g.Tiles[g.CoordToIndex(rl.Vector2{X: float32(X), Y: float32(Y)})].Transparent
 }
 
 func (g *GameMap) render() {
 	for index, tile := range g.Tiles {
-		RenderTileBasedGraphic(g.game, tile.DarkGraphic.TileGlyph, g.IndexToCoord(index), tile.DarkGraphic.FGColor)
+		mapCoords := g.IndexToCoord(index)
+		if g.game.FOVCalc.IsVisible(int(mapCoords.X), int(mapCoords.Y)) {
+			RenderTileBasedGraphic(g.game, tile.LightGraphic.TileGlyph, mapCoords, tile.LightGraphic.FGColor)
+			g.ExploredTiles[index] = true
+		} else if g.ExploredTiles[index] {
+			RenderTileBasedGraphic(g.game, tile.DarkGraphic.TileGlyph, mapCoords, tile.DarkGraphic.FGColor)
+		}
 	}
 }
