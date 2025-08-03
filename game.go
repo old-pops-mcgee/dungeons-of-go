@@ -13,7 +13,7 @@ var maxRooms int = 30
 
 type Game struct {
 	spritesheet rl.Texture2D
-	player      *Player
+	player      *Entity
 	gameMap     GameMap
 	camera      rl.Camera2D
 	FOVCalc     *fov.View
@@ -23,7 +23,7 @@ func initGame() Game {
 	game := Game{
 		spritesheet: rl.LoadTexture("assets/16x16-RogueYun-AgmEdit.png"),
 	}
-	game.player = initPlayer(&game, rl.Vector2{X: 25, Y: 20}, PlayerGlyph, rl.White)
+	game.player = initEntity(&game, rl.Vector2{X: 25, Y: 20}, PlayerGlyph, rl.White)
 	// This function assigns the new dungeon to the game map
 	GenerateDungeon(&game, maxRooms, roomMaxSize, roomMinSize, GridWidth, GridHeight)
 	game.camera = rl.Camera2D{
