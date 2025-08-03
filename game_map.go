@@ -2,6 +2,7 @@ package main
 
 import (
 	"math"
+	"math/rand"
 	"slices"
 
 	rl "github.com/gen2brain/raylib-go/raylib"
@@ -12,6 +13,7 @@ type GameMap struct {
 	Tiles         []Tile
 	VisibleTiles  []bool
 	ExploredTiles []bool
+	Entities      []Entity
 	Width         int
 	Height        int
 }
@@ -45,6 +47,31 @@ func (g *GameMap) InBounds(X, Y int) bool {
 
 func (g *GameMap) IsOpaque(X, Y int) bool {
 	return !g.Tiles[g.CoordToIndex(rl.Vector2{X: float32(X), Y: float32(Y)})].Transparent
+}
+
+func (g *GameMap) PlaceEntities(r RectangularRoom, m int) {
+	numberOfMonsters := rand.Intn(m + 1)
+
+	for range numberOfMonsters {
+		entityMapCoords := rl.Vector2{
+			X: float32(rand.Intn(int(r.BottomRight.X-1)-int(r.TopLeft.X+1)) + int(r.TopLeft.X+1)),
+			Y: float32(rand.Intn(int(r.BottomRight.Y-1)-int(r.TopLeft.Y+1)) + int(r.TopLeft.Y+1)),
+		}
+		entityCollides := false
+		for _, e := range g.Entities {
+			if rl.Vector2Equals(e.drawableEntity.mapCoords, entityMapCoords) {
+				entityCollides = true
+			}
+		}
+
+		if !entityCollides {
+			if rand.Float32() < 0.8 {
+				g.Entities = append(g.Entities, *initEntity(g.game, entityMapCoords, GoblinGlyph, rl.Lime))
+			} else {
+				g.Entities = append(g.Entities, *initEntity(g.game, entityMapCoords, TrollGlyph, rl.DarkGreen))
+			}
+		}
+	}
 }
 
 func (g *GameMap) render() {

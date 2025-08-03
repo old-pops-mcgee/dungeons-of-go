@@ -10,6 +10,7 @@ var cameraZoom float32 = 2
 var roomMaxSize int = 10
 var roomMinSize int = 6
 var maxRooms int = 30
+var maxMonstersPerRoom = 2
 
 type Game struct {
 	spritesheet rl.Texture2D
@@ -25,7 +26,7 @@ func initGame() Game {
 	}
 	game.player = initEntity(&game, rl.Vector2{X: 25, Y: 20}, PlayerGlyph, rl.White)
 	// This function assigns the new dungeon to the game map
-	GenerateDungeon(&game, maxRooms, roomMaxSize, roomMinSize, GridWidth, GridHeight)
+	GenerateDungeon(&game, maxRooms, maxMonstersPerRoom, roomMaxSize, roomMinSize, GridWidth, GridHeight)
 	game.camera = rl.Camera2D{
 		Target:   game.getCameraTarget(),
 		Offset:   rl.Vector2{X: float32(rl.GetScreenWidth()) / 2, Y: float32(rl.GetScreenHeight()) / 2},
