@@ -12,12 +12,11 @@ var roomMinSize int = 6
 var maxRooms int = 30
 
 type Game struct {
-	spritesheet                rl.Texture2D
-	player                     Player
-	playerInputCooldownCounter int
-	gameMap                    GameMap
-	camera                     rl.Camera2D
-	FOVCalc                    *fov.View
+	spritesheet rl.Texture2D
+	player      Player
+	gameMap     GameMap
+	camera      rl.Camera2D
+	FOVCalc     *fov.View
 }
 
 func initGame() Game {
