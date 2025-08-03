@@ -1,6 +1,7 @@
 package main
 
 import (
+	"math"
 	"slices"
 
 	rl "github.com/gen2brain/raylib-go/raylib"
@@ -47,13 +48,20 @@ func (g *GameMap) IsOpaque(X, Y int) bool {
 }
 
 func (g *GameMap) render() {
+	playerCoords := g.game.player.drawableEntity.mapCoords
+	viewportWidthBuffer := float64(1 + float32(GridWidth)/(2*g.game.camera.Zoom))
+	viewportHeightBuffer := float64(1 + float32(GridHeight)/(2*g.game.camera.Zoom))
+
 	for index, tile := range g.Tiles {
 		mapCoords := g.IndexToCoord(index)
-		if g.game.FOVCalc.IsVisible(int(mapCoords.X), int(mapCoords.Y)) {
-			RenderTileBasedGraphic(g.game, tile.LightGraphic.TileGlyph, mapCoords, tile.LightGraphic.FGColor)
-			g.ExploredTiles[index] = true
-		} else if g.ExploredTiles[index] {
-			RenderTileBasedGraphic(g.game, tile.DarkGraphic.TileGlyph, mapCoords, tile.DarkGraphic.FGColor)
+
+		if math.Abs(float64(playerCoords.X-mapCoords.X)) <= viewportWidthBuffer && math.Abs(float64(playerCoords.Y-mapCoords.Y)) <= viewportHeightBuffer {
+			if g.game.FOVCalc.IsVisible(int(mapCoords.X), int(mapCoords.Y)) {
+				RenderTileBasedGraphic(g.game, tile.LightGraphic.TileGlyph, mapCoords, tile.LightGraphic.FGColor)
+				g.ExploredTiles[index] = true
+			} else if g.ExploredTiles[index] {
+				RenderTileBasedGraphic(g.game, tile.DarkGraphic.TileGlyph, mapCoords, tile.DarkGraphic.FGColor)
+			}
 		}
 	}
 }

@@ -13,8 +13,8 @@ type Player struct {
 	movementActionSet map[MovementAction]bool
 }
 
-func initPlayer(g *Game, m rl.Vector2, gl Glyph, t color.RGBA) Player {
-	return Player{
+func initPlayer(g *Game, m rl.Vector2, gl Glyph, t color.RGBA) *Player {
+	return &Player{
 		game:              g,
 		viewRadius:        6,
 		drawableEntity:    initDrawableEntity(g, m, gl, t),
