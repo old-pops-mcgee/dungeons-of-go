@@ -10,8 +10,6 @@ var GridHeight int = 50
 var WindowWidth int = GridWidth * BASE_SPRITE_WIDTH
 var WindowHeight int = GridHeight * BASE_SPRITE_HEIGHT
 
-const PLAYER_INPUT_COOLDOWN int = 8
-
 func (game *Game) run() {
 	for !rl.WindowShouldClose() {
 		game.handleInput()

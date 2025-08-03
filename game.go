@@ -22,8 +22,7 @@ type Game struct {
 
 func initGame() Game {
 	game := Game{
-		spritesheet:                rl.LoadTexture("assets/16x16-RogueYun-AgmEdit.png"),
-		playerInputCooldownCounter: PLAYER_INPUT_COOLDOWN,
+		spritesheet: rl.LoadTexture("assets/16x16-RogueYun-AgmEdit.png"),
 	}
 	game.player = initPlayer(&game, rl.Vector2{X: 25, Y: 20}, PlayerGlyph, rl.White)
 	// This function assigns the new dungeon to the game map
@@ -61,27 +60,14 @@ func (g *Game) update() {
 
 	// Update the camera
 	g.camera.Target = g.getCameraTarget()
-
-	// Update the cooldown timer
-	g.playerInputCooldownCounter = max(0, g.playerInputCooldownCounter-1)
 }
 
 func (g *Game) handleInput() {
-	if g.playerInputCooldownCounter <= 0 {
-		processedKey := false
-		for key, action := range MOVEMENT_KEYS {
-			if rl.IsKeyDown(key) {
-				g.player.movementActionSet[action] = true
-				processedKey = true
-			}
-		}
-
-		// If we processed a key, reset the cooldown timer
-		if processedKey {
-			g.playerInputCooldownCounter = PLAYER_INPUT_COOLDOWN
+	for key, action := range MOVEMENT_KEYS {
+		if rl.IsKeyDown(key) {
+			g.player.movementActionSet[action] = true
 		}
 	}
-
 }
 
 func (g *Game) getCameraTarget() rl.Vector2 {
