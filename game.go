@@ -1,6 +1,8 @@
 package main
 
 import (
+	"fmt"
+
 	rl "github.com/gen2brain/raylib-go/raylib"
 	fov "github.com/norendren/go-fov/fov"
 )
@@ -63,6 +65,11 @@ func (g *Game) render() {
 func (g *Game) update() {
 	// Update the player
 	g.player.update()
+
+	// Update the enemies
+	for i := range g.gameMap.Entities {
+		fmt.Printf("Entity %d is contemplating its turn\n", i)
+	}
 
 	// Update the FOV
 	g.FOVCalc.Compute(g.gameMap, int(g.player.drawableEntity.mapCoords.X), int(g.player.drawableEntity.mapCoords.Y), g.player.viewRadius)
