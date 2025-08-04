@@ -59,6 +59,13 @@ func (e *Entity) isValidMovementTarget(targetCoords rl.Vector2) bool {
 		return false
 	}
 
+	// Validate the target position doesn't have an entity in it
+	for _, otherEntity := range e.game.gameMap.Entities {
+		if rl.Vector2Equals(targetCoords, otherEntity.drawableEntity.mapCoords) {
+			return false
+		}
+	}
+
 	// Validate the target position is walkable, assuming it's in bounds
 	targetIndex := e.game.gameMap.CoordToIndex(targetCoords)
 	return e.game.gameMap.Tiles[targetIndex].Walkable
