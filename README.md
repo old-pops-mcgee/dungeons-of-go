@@ -21,9 +21,10 @@ Having started participating in game jams this year, I quickly realized that a w
 ## Things I'll be using
 I'd like to give credit where credit is due, and provide attribution for everything I'll be using to build out this game. In no particular order:
 
-### Libraries:
+### Libraries and References:
 * Raylib-Go: https://github.com/gen2brain/raylib-go - Go bindings for the Raylib library, pnned (at time of writing) to version 5.5
 * Raylib-Go-Wasm: https://github.com/BrownNPC/Raylib-Go-Wasm - Bindings that allow Raylib-Go to work with the web, utilizing WASM and very few constraints and changes to the code
+* Go-FOV: https://github.com/norendren/go-fov - A library for calculating FOV in a grid-based system
 * RogueYun Agm Edit Dwarf Fortress character set: https://dwarffortresswiki.org/Tileset_repository#16x16-RogueYun-AgmEdit.png - In keeping with the ASCII asthetic, I'll be using this spritesheet as a template for the tutorial
 * The libtcod tutorial: https://rogueliketutorials.com/tutorials/tcod/v2/ - the "source material" for this project, I'll be following along with the libtcod tutorial and adapting as appropriate (given the library _and_ the language will be changing)
 
