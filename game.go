@@ -16,6 +16,13 @@ var roomMinSize int = 6
 var maxRooms int = 30
 var maxMonstersPerRoom = 2
 
+type GameState int
+
+const (
+	WaitingForInput GameState = iota
+	Playing
+)
+
 type Game struct {
 	spritesheet                rl.Texture2D
 	player                     *Entity
@@ -23,12 +30,14 @@ type Game struct {
 	gameMap                    *GameMap
 	camera                     rl.Camera2D
 	FOVCalc                    *fov.View
+	state                      GameState
 }
 
 func initGame() Game {
 	game := Game{
 		playerInputCooldownCounter: PLAYER_INPUT_COOLDOWN,
 		spritesheet:                rl.LoadTexture("assets/16x16-RogueYun-AgmEdit.png"),
+		state:                      WaitingForInput,
 	}
 	game.player = initEntity(&game, rl.Vector2{X: 25, Y: 20}, PlayerGlyph, rl.White)
 	// This function assigns the new dungeon to the game map
@@ -67,8 +76,10 @@ func (g *Game) update() {
 	g.player.update()
 
 	// Update the enemies
-	for i := range g.gameMap.Entities {
-		fmt.Printf("Entity %d is contemplating its turn\n", i)
+	if g.state == Playing {
+		for i := range g.gameMap.Entities {
+			fmt.Printf("Entity %d is contemplating its turn\n", i)
+		}
 	}
 
 	// Update the FOV
@@ -79,6 +90,9 @@ func (g *Game) update() {
 
 	// Update the cooldown timer
 	g.playerInputCooldownCounter = max(0, g.playerInputCooldownCounter-1)
+
+	// Set the state to WaitingForInput to give player control
+	g.state = WaitingForInput
 }
 
 func (g *Game) handleInput() {
@@ -88,6 +102,7 @@ func (g *Game) handleInput() {
 			if rl.IsKeyDown(key) {
 				g.player.movementActionSet[action] = true
 				processedKey = true
+				g.state = Playing
 			}
 		}
 
