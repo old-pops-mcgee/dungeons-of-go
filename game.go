@@ -5,6 +5,8 @@ import (
 	fov "github.com/norendren/go-fov/fov"
 )
 
+const PLAYER_INPUT_COOLDOWN int = 4
+
 var cameraZoom float32 = 2
 
 var roomMaxSize int = 10
@@ -13,16 +15,18 @@ var maxRooms int = 30
 var maxMonstersPerRoom = 2
 
 type Game struct {
-	spritesheet rl.Texture2D
-	player      *Entity
-	gameMap     *GameMap
-	camera      rl.Camera2D
-	FOVCalc     *fov.View
+	spritesheet                rl.Texture2D
+	player                     *Entity
+	playerInputCooldownCounter int
+	gameMap                    *GameMap
+	camera                     rl.Camera2D
+	FOVCalc                    *fov.View
 }
 
 func initGame() Game {
 	game := Game{
-		spritesheet: rl.LoadTexture("assets/16x16-RogueYun-AgmEdit.png"),
+		playerInputCooldownCounter: PLAYER_INPUT_COOLDOWN,
+		spritesheet:                rl.LoadTexture("assets/16x16-RogueYun-AgmEdit.png"),
 	}
 	game.player = initEntity(&game, rl.Vector2{X: 25, Y: 20}, PlayerGlyph, rl.White)
 	// This function assigns the new dungeon to the game map
@@ -65,12 +69,24 @@ func (g *Game) update() {
 
 	// Update the camera
 	g.camera.Target = g.getCameraTarget()
+
+	// Update the cooldown timer
+	g.playerInputCooldownCounter = max(0, g.playerInputCooldownCounter-1)
 }
 
 func (g *Game) handleInput() {
-	for key, action := range MOVEMENT_KEYS {
-		if rl.IsKeyDown(key) {
-			g.player.movementActionSet[action] = true
+	if g.playerInputCooldownCounter <= 0 {
+		processedKey := false
+		for key, action := range MOVEMENT_KEYS {
+			if rl.IsKeyDown(key) {
+				g.player.movementActionSet[action] = true
+				processedKey = true
+			}
+		}
+
+		// If we processed a key, reset the cooldown timer
+		if processedKey {
+			g.playerInputCooldownCounter = PLAYER_INPUT_COOLDOWN
 		}
 	}
 }
