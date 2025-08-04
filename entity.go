@@ -1,9 +1,18 @@
 package main
 
 import (
+	"fmt"
 	"image/color"
 
 	rl "github.com/gen2brain/raylib-go/raylib"
+)
+
+type EntityAction int
+
+const (
+	Move EntityAction = iota
+	Melee
+	Stand
 )
 
 type Entity struct {
@@ -48,25 +57,35 @@ func (e *Entity) update() {
 	targetCoords.X += float32(movementDelta.dx)
 	targetCoords.Y += float32(movementDelta.dy)
 
-	if e.isValidMovementTarget(targetCoords) {
+	entityAction := e.getEntityActionForTarget(targetCoords)
+
+	switch entityAction {
+	case Stand:
+		// Do nothing
+	case Move:
 		e.drawableEntity.mapCoords = targetCoords
+	case Melee:
+		fmt.Println("I'm attacking the entity!")
 	}
 }
 
-func (e *Entity) isValidMovementTarget(targetCoords rl.Vector2) bool {
+func (e *Entity) getEntityActionForTarget(targetCoords rl.Vector2) EntityAction {
 	// Validate the target position is in bounds
 	if !e.game.gameMap.InBounds(int(targetCoords.X), int(targetCoords.Y)) {
-		return false
+		return Stand
 	}
 
 	// Validate the target position doesn't have an entity in it
 	for _, otherEntity := range e.game.gameMap.Entities {
 		if rl.Vector2Equals(targetCoords, otherEntity.drawableEntity.mapCoords) {
-			return false
+			return Melee
 		}
 	}
 
 	// Validate the target position is walkable, assuming it's in bounds
 	targetIndex := e.game.gameMap.CoordToIndex(targetCoords)
-	return e.game.gameMap.Tiles[targetIndex].Walkable
+	if e.game.gameMap.Tiles[targetIndex].Walkable {
+		return Move
+	}
+	return Stand
 }
