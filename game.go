@@ -15,7 +15,7 @@ var maxMonstersPerRoom = 2
 type Game struct {
 	spritesheet rl.Texture2D
 	player      *Entity
-	gameMap     GameMap
+	gameMap     *GameMap
 	camera      rl.Camera2D
 	FOVCalc     *fov.View
 }
@@ -46,6 +46,11 @@ func (g *Game) render() {
 	rl.ClearBackground(rl.Black)
 	rl.BeginMode2D(g.camera)
 	g.gameMap.render()
+	for _, e := range g.gameMap.Entities {
+		if g.FOVCalc.IsVisible(int(e.drawableEntity.mapCoords.X), int(e.drawableEntity.mapCoords.Y)) {
+			e.render()
+		}
+	}
 	g.player.render()
 	rl.EndMode2D()
 	rl.EndDrawing()
@@ -56,7 +61,7 @@ func (g *Game) update() {
 	g.player.update()
 
 	// Update the FOV
-	g.FOVCalc.Compute(&g.gameMap, int(g.player.drawableEntity.mapCoords.X), int(g.player.drawableEntity.mapCoords.Y), g.player.viewRadius)
+	g.FOVCalc.Compute(g.gameMap, int(g.player.drawableEntity.mapCoords.X), int(g.player.drawableEntity.mapCoords.Y), g.player.viewRadius)
 
 	// Update the camera
 	g.camera.Target = g.getCameraTarget()

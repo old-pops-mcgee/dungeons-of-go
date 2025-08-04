@@ -73,7 +73,7 @@ func GenerateTunnelIndices(g *Game, pointA rl.Vector2, pointB rl.Vector2) []int 
 
 func GenerateDungeon(g *Game, maxRooms int, maxMonsters int, roomMaxSize int, roomMinSize int, mapWidth int, mapHeight int) GameMap {
 	gMap := NewGameMap(g, mapWidth, mapHeight)
-	g.gameMap = gMap
+	g.gameMap = &gMap
 
 	roomList := []RectangularRoom{}
 
