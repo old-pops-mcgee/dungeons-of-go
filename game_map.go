@@ -1,6 +1,8 @@
 package main
 
 import (
+	"math"
+	"math/rand"
 	"slices"
 
 	rl "github.com/gen2brain/raylib-go/raylib"
@@ -11,6 +13,7 @@ type GameMap struct {
 	Tiles         []Tile
 	VisibleTiles  []bool
 	ExploredTiles []bool
+	Entities      []Entity
 	Width         int
 	Height        int
 }
@@ -46,14 +49,46 @@ func (g *GameMap) IsOpaque(X, Y int) bool {
 	return !g.Tiles[g.CoordToIndex(rl.Vector2{X: float32(X), Y: float32(Y)})].Transparent
 }
 
+func (g *GameMap) PlaceEntities(r RectangularRoom, m int) {
+	numberOfMonsters := rand.Intn(m + 1)
+
+	for range numberOfMonsters {
+		entityMapCoords := rl.Vector2{
+			X: float32(rand.Intn(int(r.BottomRight.X-1)-int(r.TopLeft.X+1)) + int(r.TopLeft.X+1)),
+			Y: float32(rand.Intn(int(r.BottomRight.Y-1)-int(r.TopLeft.Y+1)) + int(r.TopLeft.Y+1)),
+		}
+		entityCollides := false
+		for _, e := range g.Entities {
+			if rl.Vector2Equals(e.drawableEntity.mapCoords, entityMapCoords) {
+				entityCollides = true
+			}
+		}
+
+		if !entityCollides {
+			if rand.Float32() < 0.8 {
+				g.Entities = append(g.Entities, *initEntity(g.game, entityMapCoords, GoblinGlyph, rl.Lime))
+			} else {
+				g.Entities = append(g.Entities, *initEntity(g.game, entityMapCoords, TrollGlyph, rl.DarkGreen))
+			}
+		}
+	}
+}
+
 func (g *GameMap) render() {
+	playerCoords := g.game.player.drawableEntity.mapCoords
+	viewportWidthBuffer := float64(1 + float32(GridWidth)/(2*g.game.camera.Zoom))
+	viewportHeightBuffer := float64(1 + float32(GridHeight)/(2*g.game.camera.Zoom))
+
 	for index, tile := range g.Tiles {
 		mapCoords := g.IndexToCoord(index)
-		if g.game.FOVCalc.IsVisible(int(mapCoords.X), int(mapCoords.Y)) {
-			RenderTileBasedGraphic(g.game, tile.LightGraphic.TileGlyph, mapCoords, tile.LightGraphic.FGColor)
-			g.ExploredTiles[index] = true
-		} else if g.ExploredTiles[index] {
-			RenderTileBasedGraphic(g.game, tile.DarkGraphic.TileGlyph, mapCoords, tile.DarkGraphic.FGColor)
+
+		if math.Abs(float64(playerCoords.X-mapCoords.X)) <= viewportWidthBuffer && math.Abs(float64(playerCoords.Y-mapCoords.Y)) <= viewportHeightBuffer {
+			if g.game.FOVCalc.IsVisible(int(mapCoords.X), int(mapCoords.Y)) {
+				RenderTileBasedGraphic(g.game, tile.LightGraphic.TileGlyph, mapCoords, tile.LightGraphic.FGColor)
+				g.ExploredTiles[index] = true
+			} else if g.ExploredTiles[index] {
+				RenderTileBasedGraphic(g.game, tile.DarkGraphic.TileGlyph, mapCoords, tile.DarkGraphic.FGColor)
+			}
 		}
 	}
 }

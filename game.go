@@ -1,33 +1,47 @@
 package main
 
 import (
+	"fmt"
+
 	rl "github.com/gen2brain/raylib-go/raylib"
 	fov "github.com/norendren/go-fov/fov"
 )
+
+const PLAYER_INPUT_COOLDOWN int = 4
 
 var cameraZoom float32 = 2
 
 var roomMaxSize int = 10
 var roomMinSize int = 6
 var maxRooms int = 30
+var maxMonstersPerRoom = 2
+
+type GameState int
+
+const (
+	WaitingForInput GameState = iota
+	Playing
+)
 
 type Game struct {
 	spritesheet                rl.Texture2D
-	player                     Player
+	player                     *Entity
 	playerInputCooldownCounter int
-	gameMap                    GameMap
+	gameMap                    *GameMap
 	camera                     rl.Camera2D
 	FOVCalc                    *fov.View
+	state                      GameState
 }
 
 func initGame() Game {
 	game := Game{
-		spritesheet:                rl.LoadTexture("assets/16x16-RogueYun-AgmEdit.png"),
 		playerInputCooldownCounter: PLAYER_INPUT_COOLDOWN,
+		spritesheet:                rl.LoadTexture("assets/16x16-RogueYun-AgmEdit.png"),
+		state:                      WaitingForInput,
 	}
-	game.player = initPlayer(&game, rl.Vector2{X: 25, Y: 20}, PlayerGlyph, rl.White)
+	game.player = initEntity(&game, rl.Vector2{X: 25, Y: 20}, PlayerGlyph, rl.White)
 	// This function assigns the new dungeon to the game map
-	GenerateDungeon(&game, maxRooms, roomMaxSize, roomMinSize, GridWidth, GridHeight)
+	GenerateDungeon(&game, maxRooms, maxMonstersPerRoom, roomMaxSize, roomMinSize, GridWidth, GridHeight)
 	game.camera = rl.Camera2D{
 		Target:   game.getCameraTarget(),
 		Offset:   rl.Vector2{X: float32(rl.GetScreenWidth()) / 2, Y: float32(rl.GetScreenHeight()) / 2},
@@ -47,6 +61,11 @@ func (g *Game) render() {
 	rl.ClearBackground(rl.Black)
 	rl.BeginMode2D(g.camera)
 	g.gameMap.render()
+	for _, e := range g.gameMap.Entities {
+		if g.FOVCalc.IsVisible(int(e.drawableEntity.mapCoords.X), int(e.drawableEntity.mapCoords.Y)) {
+			e.render()
+		}
+	}
 	g.player.render()
 	rl.EndMode2D()
 	rl.EndDrawing()
@@ -56,14 +75,24 @@ func (g *Game) update() {
 	// Update the player
 	g.player.update()
 
+	// Update the enemies
+	if g.state == Playing {
+		for i := range g.gameMap.Entities {
+			fmt.Printf("Entity %d is contemplating its turn\n", i)
+		}
+	}
+
 	// Update the FOV
-	g.FOVCalc.Compute(&g.gameMap, int(g.player.drawableEntity.mapCoords.X), int(g.player.drawableEntity.mapCoords.Y), g.player.viewRadius)
+	g.FOVCalc.Compute(g.gameMap, int(g.player.drawableEntity.mapCoords.X), int(g.player.drawableEntity.mapCoords.Y), g.player.viewRadius)
 
 	// Update the camera
 	g.camera.Target = g.getCameraTarget()
 
 	// Update the cooldown timer
 	g.playerInputCooldownCounter = max(0, g.playerInputCooldownCounter-1)
+
+	// Set the state to WaitingForInput to give player control
+	g.state = WaitingForInput
 }
 
 func (g *Game) handleInput() {
@@ -73,6 +102,7 @@ func (g *Game) handleInput() {
 			if rl.IsKeyDown(key) {
 				g.player.movementActionSet[action] = true
 				processedKey = true
+				g.state = Playing
 			}
 		}
 
@@ -81,7 +111,6 @@ func (g *Game) handleInput() {
 			g.playerInputCooldownCounter = PLAYER_INPUT_COOLDOWN
 		}
 	}
-
 }
 
 func (g *Game) getCameraTarget() rl.Vector2 {
