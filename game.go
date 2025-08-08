@@ -1,8 +1,6 @@
 package main
 
 import (
-	"fmt"
-
 	rl "github.com/gen2brain/raylib-go/raylib"
 	fov "github.com/norendren/go-fov/fov"
 )
@@ -77,8 +75,8 @@ func (g *Game) update() {
 
 	// Update the enemies
 	if g.state == Playing {
-		for i := range g.gameMap.Entities {
-			fmt.Printf("Entity %d is contemplating its turn\n", i)
+		for _, e := range g.gameMap.Entities {
+			e.update()
 		}
 	}
 

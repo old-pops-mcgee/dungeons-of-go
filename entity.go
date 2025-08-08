@@ -19,24 +19,26 @@ type EntityTemplate struct {
 	viewRadius int
 	glyph      Glyph
 	color      color.RGBA
+	planner    Planner
 	maxHP      int
 	defense    int
 	power      int
 }
 
 var (
-	Player = EntityTemplate{viewRadius: 6, glyph: PlayerGlyph, color: rl.White, maxHP: 30, defense: 2, power: 5}
-	Troll  = EntityTemplate{viewRadius: 4, glyph: TrollGlyph, color: rl.DarkGreen, maxHP: 16, defense: 1, power: 4}
-	Goblin = EntityTemplate{viewRadius: 6, glyph: GoblinGlyph, color: rl.Lime, maxHP: 10, defense: 0, power: 3}
+	Player = EntityTemplate{viewRadius: 6, glyph: PlayerGlyph, color: rl.White, planner: PlayerPlanner{}, maxHP: 30, defense: 2, power: 5}
+	Troll  = EntityTemplate{viewRadius: 4, glyph: TrollGlyph, color: rl.DarkGreen, planner: HostileEnemyPlanner{}, maxHP: 16, defense: 1, power: 4}
+	Goblin = EntityTemplate{viewRadius: 6, glyph: GoblinGlyph, color: rl.Lime, planner: HostileEnemyPlanner{}, maxHP: 10, defense: 0, power: 3}
 )
 
 func (e *EntityTemplate) Spawn(g *Game, m rl.Vector2) *Entity {
-	return initEntity(g, m, e.glyph, e.color, e.viewRadius, e.maxHP, e.defense, e.power)
+	return initEntity(g, m, e.glyph, e.color, e.planner, e.viewRadius, e.maxHP, e.defense, e.power)
 }
 
 type Entity struct {
 	game              *Game
 	viewRadius        int
+	planner           Planner
 	drawableEntity    DrawableEntity
 	movementActionSet map[MovementAction]bool
 	maxHP             int
@@ -45,10 +47,11 @@ type Entity struct {
 	power             int
 }
 
-func initEntity(g *Game, m rl.Vector2, gl Glyph, t color.RGBA, vr int, mh int, d int, p int) *Entity {
+func initEntity(g *Game, m rl.Vector2, gl Glyph, t color.RGBA, pl Planner, vr int, mh int, d int, p int) *Entity {
 	return &Entity{
 		game:              g,
 		viewRadius:        vr,
+		planner:           pl,
 		drawableEntity:    initDrawableEntity(g, m, gl, t),
 		movementActionSet: map[MovementAction]bool{},
 		maxHP:             mh,
@@ -63,16 +66,14 @@ func (e *Entity) render() {
 }
 
 func (e *Entity) update() {
+	movementActionSet := e.planner.planMovementActionSet(e)
 	var movementDelta MovementDelta
 
 	// Process movements from each movement action
-	for movement := range e.movementActionSet {
+	for movement := range movementActionSet {
 		tempMovementDelta := MOVEMENT_DELTAS[movement]
 		movementDelta.dx += tempMovementDelta.dx
 		movementDelta.dy += tempMovementDelta.dy
-
-		// Clear the movement from the action set
-		delete(e.movementActionSet, movement)
 	}
 
 	// Clamp the movement deltas to ensure we don't process to big a step
