@@ -39,7 +39,7 @@ func initGame() Game {
 		spritesheet:                rl.LoadTexture("assets/16x16-RogueYun-AgmEdit.png"),
 		state:                      WaitingForInput,
 	}
-	game.player = initEntity(&game, rl.Vector2{X: 25, Y: 20}, PlayerGlyph, rl.White)
+	game.player = Player.Spawn(&game, rl.Vector2{X: 25, Y: 20})
 	// This function assigns the new dungeon to the game map
 	GenerateDungeon(&game, maxRooms, maxMonstersPerRoom, roomMaxSize, roomMinSize, GridWidth, GridHeight)
 	game.camera = rl.Camera2D{

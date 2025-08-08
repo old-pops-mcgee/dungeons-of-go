@@ -15,6 +15,25 @@ const (
 	Stand
 )
 
+type EntityTemplate struct {
+	viewRadius int
+	glyph      Glyph
+	color      color.RGBA
+	maxHP      int
+	defense    int
+	power      int
+}
+
+var (
+	Player = EntityTemplate{viewRadius: 6, glyph: PlayerGlyph, color: rl.White, maxHP: 30, defense: 2, power: 5}
+	Troll  = EntityTemplate{viewRadius: 4, glyph: TrollGlyph, color: rl.DarkGreen, maxHP: 16, defense: 1, power: 4}
+	Goblin = EntityTemplate{viewRadius: 6, glyph: GoblinGlyph, color: rl.Lime, maxHP: 10, defense: 0, power: 3}
+)
+
+func (e *EntityTemplate) Spawn(g *Game, m rl.Vector2) *Entity {
+	return initEntity(g, m, e.glyph, e.color, e.viewRadius, e.maxHP, e.defense, e.power)
+}
+
 type Entity struct {
 	game              *Game
 	viewRadius        int
@@ -26,12 +45,16 @@ type Entity struct {
 	power             int
 }
 
-func initEntity(g *Game, m rl.Vector2, gl Glyph, t color.RGBA) *Entity {
+func initEntity(g *Game, m rl.Vector2, gl Glyph, t color.RGBA, vr int, mh int, d int, p int) *Entity {
 	return &Entity{
 		game:              g,
-		viewRadius:        6,
+		viewRadius:        vr,
 		drawableEntity:    initDrawableEntity(g, m, gl, t),
 		movementActionSet: map[MovementAction]bool{},
+		maxHP:             mh,
+		currentHP:         mh,
+		defense:           d,
+		power:             p,
 	}
 }
 

@@ -66,9 +66,9 @@ func (g *GameMap) PlaceEntities(r RectangularRoom, m int) {
 
 		if !entityCollides {
 			if rand.Float32() < 0.8 {
-				g.Entities = append(g.Entities, *initEntity(g.game, entityMapCoords, GoblinGlyph, rl.Lime))
+				g.Entities = append(g.Entities, *Goblin.Spawn(g.game, entityMapCoords))
 			} else {
-				g.Entities = append(g.Entities, *initEntity(g.game, entityMapCoords, TrollGlyph, rl.DarkGreen))
+				g.Entities = append(g.Entities, *Troll.Spawn(g.game, entityMapCoords))
 			}
 		}
 	}
