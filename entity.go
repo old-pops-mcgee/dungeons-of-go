@@ -20,6 +20,10 @@ type Entity struct {
 	viewRadius        int
 	drawableEntity    DrawableEntity
 	movementActionSet map[MovementAction]bool
+	maxHP             int
+	currentHP         int
+	defense           int
+	power             int
 }
 
 func initEntity(g *Game, m rl.Vector2, gl Glyph, t color.RGBA) *Entity {
