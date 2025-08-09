@@ -20,6 +20,15 @@ func NewMoveAction(target rl.Vector2) MoveAction {
 }
 
 func (m *MoveAction) performAction(e *Entity) {
+	if !e.isPlayer {
+		entityCell := e.game.pathGrid.Get(int(e.drawableEntity.mapCoords.X), int(e.drawableEntity.mapCoords.Y))
+		if entityCell.Cost >= 6 {
+			entityCell.Cost -= 5
+		}
+
+		targetCell := e.game.pathGrid.Get(int(m.targetCoords.X), int(m.targetCoords.Y))
+		targetCell.Cost += 5
+	}
 	e.drawableEntity.mapCoords = m.targetCoords
 }
 
@@ -36,12 +45,6 @@ type MeleeAction struct {
 func (m *MeleeAction) performAction(e *Entity) {
 	fmt.Printf("I'm attacking the entity at %f, %f\n", m.targetCoords.X, m.targetCoords.Y)
 }
-
-/*const (
-	Move EntityAction = iota
-	Melee
-	Stand
-)*/
 
 type EntityTemplate struct {
 	viewRadius int
