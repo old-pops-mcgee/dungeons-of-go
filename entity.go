@@ -82,6 +82,12 @@ func (e *Entity) update() {
 
 	// Find the target coordinates
 	targetCoords := e.drawableEntity.mapCoords
+
+	// Lower the cost, as the entity might be moving from this spot
+	currentCell := e.game.pathGrid.Get(int(targetCoords.X), int(targetCoords.Y))
+	if currentCell.Cost >= 6 {
+		currentCell.Cost -= 5
+	}
 	targetCoords.X += float32(movementDelta.dx)
 	targetCoords.Y += float32(movementDelta.dy)
 
@@ -94,6 +100,13 @@ func (e *Entity) update() {
 		e.drawableEntity.mapCoords = targetCoords
 	case Melee:
 		fmt.Println("I'm attacking the entity!")
+	}
+
+	// Raise the cost of the cell the entity is currently on, assuming it's not the player
+	playerCoords := e.game.player.drawableEntity.mapCoords
+	entityCoords := e.drawableEntity.mapCoords
+	if !rl.Vector2Equals(playerCoords, entityCoords) {
+		e.game.pathGrid.Get(int(entityCoords.X), int(entityCoords.Y)).Cost += 5
 	}
 }
 
