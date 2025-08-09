@@ -66,32 +66,7 @@ func (e *Entity) render() {
 }
 
 func (e *Entity) update() {
-	movementActionSet := e.planner.planMovementActionSet(e)
-	var movementDelta MovementDelta
-
-	// Process movements from each movement action
-	for movement := range movementActionSet {
-		tempMovementDelta := MOVEMENT_DELTAS[movement]
-		movementDelta.dx += tempMovementDelta.dx
-		movementDelta.dy += tempMovementDelta.dy
-	}
-
-	// Clamp the movement deltas to ensure we don't process to big a step
-	movementDelta.dx = int(rl.Clamp(float32(movementDelta.dx), -1, 1))
-	movementDelta.dy = int(rl.Clamp(float32(movementDelta.dy), -1, 1))
-
-	// Find the target coordinates
-	targetCoords := e.drawableEntity.mapCoords
-
-	// Lower the cost, as the entity might be moving from this spot
-	currentCell := e.game.pathGrid.Get(int(targetCoords.X), int(targetCoords.Y))
-	if currentCell.Cost >= 6 {
-		currentCell.Cost -= 5
-	}
-	targetCoords.X += float32(movementDelta.dx)
-	targetCoords.Y += float32(movementDelta.dy)
-
-	entityAction := e.getEntityActionForTarget(targetCoords)
+	entityAction := e.planner.planNextAction(e)
 
 	switch entityAction {
 	case Stand:
