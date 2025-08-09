@@ -131,7 +131,7 @@ func GenerateDungeon(g *Game, maxRooms int, maxMonsters int, roomMaxSize int, ro
 		}
 	}
 	g.pathGrid = paths.NewGridFromRuneArrays(pathSlice, BASE_SPRITE_WIDTH, BASE_SPRITE_HEIGHT)
-	g.pathGrid.SetWalkable('.', true)
+	g.pathGrid.SetWalkable('#', false)
 
 	return gMap
 }

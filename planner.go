@@ -50,7 +50,7 @@ func (h HostileEnemyPlanner) planNextAction(e *Entity) EntityAction {
 	entityCoords := e.drawableEntity.mapCoords
 	entityCell := e.game.pathGrid.Get(int(entityCoords.X), int(entityCoords.Y))
 
-	path := e.game.pathGrid.GetPathFromCells(entityCell, playerCell, true, false)
+	path := e.game.pathGrid.GetPathFromCells(entityCell, playerCell, true, true)
 	nextStep := path.Next()
 
 	nextAction := e.getEntityActionForTarget(rl.Vector2{X: float32(nextStep.X), Y: float32(nextStep.Y)})
