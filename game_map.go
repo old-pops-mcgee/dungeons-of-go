@@ -83,7 +83,7 @@ func (g *GameMap) render() {
 		mapCoords := g.IndexToCoord(index)
 
 		if math.Abs(float64(playerCoords.X-mapCoords.X)) <= viewportWidthBuffer && math.Abs(float64(playerCoords.Y-mapCoords.Y)) <= viewportHeightBuffer {
-			if g.game.FOVCalc.IsVisible(int(mapCoords.X), int(mapCoords.Y)) {
+			if g.game.player.FOVCalc.IsVisible(int(mapCoords.X), int(mapCoords.Y)) {
 				RenderTileBasedGraphic(g.game, tile.LightGraphic.TileGlyph, mapCoords, tile.LightGraphic.FGColor)
 				g.ExploredTiles[index] = true
 			} else if g.ExploredTiles[index] {

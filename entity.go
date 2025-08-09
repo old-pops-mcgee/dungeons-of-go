@@ -5,6 +5,7 @@ import (
 	"image/color"
 
 	rl "github.com/gen2brain/raylib-go/raylib"
+	fov "github.com/norendren/go-fov/fov"
 )
 
 type EntityAction interface {
@@ -77,6 +78,7 @@ type Entity struct {
 	defense           int
 	power             int
 	isPlayer          bool
+	FOVCalc           *fov.View
 }
 
 func initEntity(g *Game, m rl.Vector2, gl Glyph, t color.RGBA, pl Planner, vr int, mh int, d int, p int) *Entity {
@@ -91,6 +93,7 @@ func initEntity(g *Game, m rl.Vector2, gl Glyph, t color.RGBA, pl Planner, vr in
 		defense:           d,
 		power:             p,
 		isPlayer:          false,
+		FOVCalc:           fov.New(),
 	}
 }
 
@@ -101,6 +104,9 @@ func (e *Entity) render() {
 func (e *Entity) update() {
 	entityAction := e.planner.planNextAction(e)
 	entityAction.performAction(e)
+
+	// Update the FOV
+	e.FOVCalc.Compute(e.game.gameMap, int(e.drawableEntity.mapCoords.X), int(e.drawableEntity.mapCoords.Y), e.viewRadius)
 }
 
 func (e *Entity) getEntityActionForTarget(targetCoords rl.Vector2) EntityAction {

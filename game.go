@@ -2,7 +2,6 @@ package main
 
 import (
 	rl "github.com/gen2brain/raylib-go/raylib"
-	fov "github.com/norendren/go-fov/fov"
 	paths "github.com/solarlune/paths"
 )
 
@@ -29,7 +28,6 @@ type Game struct {
 	gameMap                    *GameMap
 	pathGrid                   *paths.Grid
 	camera                     rl.Camera2D
-	FOVCalc                    *fov.View
 	state                      GameState
 }
 
@@ -49,7 +47,6 @@ func initGame() Game {
 		Rotation: 0,
 		Zoom:     cameraZoom,
 	}
-	game.FOVCalc = fov.New()
 	return game
 }
 
@@ -63,7 +60,7 @@ func (g *Game) render() {
 	rl.BeginMode2D(g.camera)
 	g.gameMap.render()
 	for _, e := range g.gameMap.Entities {
-		if g.FOVCalc.IsVisible(int(e.drawableEntity.mapCoords.X), int(e.drawableEntity.mapCoords.Y)) {
+		if g.player.FOVCalc.IsVisible(int(e.drawableEntity.mapCoords.X), int(e.drawableEntity.mapCoords.Y)) {
 			e.render()
 		}
 	}
@@ -79,12 +76,10 @@ func (g *Game) update() {
 	// Update the enemies
 	if g.state == Playing {
 		for _, e := range g.gameMap.Entities {
+
 			e.update()
 		}
 	}
-
-	// Update the FOV
-	g.FOVCalc.Compute(g.gameMap, int(g.player.drawableEntity.mapCoords.X), int(g.player.drawableEntity.mapCoords.Y), g.player.viewRadius)
 
 	// Update the camera
 	g.camera.Target = g.getCameraTarget()
