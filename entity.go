@@ -116,6 +116,11 @@ func (e *Entity) getEntityActionForTarget(targetCoords rl.Vector2) EntityAction 
 		}
 	}
 
+	// Validate the target position isn't the player (relevant for non-player entities)
+	if rl.Vector2Equals(targetCoords, e.game.player.drawableEntity.mapCoords) {
+		return &MeleeAction{targetCoords: targetCoords}
+	}
+
 	// Validate the target position is walkable, assuming it's in bounds
 	targetIndex := e.game.gameMap.CoordToIndex(targetCoords)
 	if e.game.gameMap.Tiles[targetIndex].Walkable {
