@@ -117,7 +117,7 @@ func (e *Entity) getEntityActionForTarget(targetCoords rl.Vector2) EntityAction 
 	}
 
 	// Validate the target position isn't the player (relevant for non-player entities)
-	if rl.Vector2Equals(targetCoords, e.game.player.drawableEntity.mapCoords) {
+	if !e.isPlayer && rl.Vector2Equals(targetCoords, e.game.player.drawableEntity.mapCoords) {
 		return &MeleeAction{targetCoords: targetCoords}
 	}
 
