@@ -40,6 +40,7 @@ func initGame() Game {
 		state:                      WaitingForInput,
 	}
 	game.player = Player.Spawn(&game, rl.Vector2{X: 25, Y: 20})
+	game.player.isPlayer = true
 	// This function assigns the new dungeon to the game map
 	GenerateDungeon(&game, maxRooms, maxMonstersPerRoom, roomMaxSize, roomMinSize, GridWidth, GridHeight)
 	game.camera = rl.Camera2D{

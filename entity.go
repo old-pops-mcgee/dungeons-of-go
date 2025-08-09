@@ -73,6 +73,7 @@ type Entity struct {
 	currentHP         int
 	defense           int
 	power             int
+	isPlayer          bool
 }
 
 func initEntity(g *Game, m rl.Vector2, gl Glyph, t color.RGBA, pl Planner, vr int, mh int, d int, p int) *Entity {
@@ -86,6 +87,7 @@ func initEntity(g *Game, m rl.Vector2, gl Glyph, t color.RGBA, pl Planner, vr in
 		currentHP:         mh,
 		defense:           d,
 		power:             p,
+		isPlayer:          false,
 	}
 }
 
