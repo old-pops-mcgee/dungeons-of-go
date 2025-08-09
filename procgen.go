@@ -6,7 +6,6 @@ import (
 	"slices"
 
 	rl "github.com/gen2brain/raylib-go/raylib"
-	"github.com/solarlune/paths"
 )
 
 type RectangularRoom struct {
@@ -113,22 +112,6 @@ func GenerateDungeon(g *Game, maxRooms int, maxMonsters int, roomMaxSize int, ro
 		}
 
 	}
-
-	// Initialize pathing grid
-	pathArray := [][]rune{}
-
-	for x := range mapWidth {
-		for y := range mapHeight {
-			tileIndex := gMap.CoordToIndex(rl.Vector2{X: float32(x), Y: float32(y)})
-			if gMap.Tiles[tileIndex].Walkable {
-				pathArray[x][y] = '.'
-			} else {
-				pathArray[x][y] = '#'
-			}
-		}
-	}
-	g.pathGrid = paths.NewGridFromRuneArrays(pathArray, BASE_SPRITE_WIDTH, BASE_SPRITE_HEIGHT)
-	g.pathGrid.SetWalkable('.', true)
 
 	return gMap
 }

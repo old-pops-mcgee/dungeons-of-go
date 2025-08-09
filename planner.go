@@ -45,5 +45,5 @@ type HostileEnemyPlanner struct {
 }
 
 func (h HostileEnemyPlanner) planNextAction(e *Entity) EntityAction {
-	return Stand
+	return &StandAction{}
 }

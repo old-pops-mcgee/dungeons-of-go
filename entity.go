@@ -7,13 +7,41 @@ import (
 	rl "github.com/gen2brain/raylib-go/raylib"
 )
 
-type EntityAction int
+type EntityAction interface {
+	performAction(e *Entity)
+}
 
-const (
+type MoveAction struct {
+	targetCoords rl.Vector2
+}
+
+func NewMoveAction(target rl.Vector2) MoveAction {
+	return MoveAction{targetCoords: target}
+}
+
+func (m *MoveAction) performAction(e *Entity) {
+	e.drawableEntity.mapCoords = m.targetCoords
+}
+
+type StandAction struct{}
+
+func (s *StandAction) performAction(e *Entity) {
+	// Do nothing
+}
+
+type MeleeAction struct {
+	targetCoords rl.Vector2
+}
+
+func (m *MeleeAction) performAction(e *Entity) {
+	fmt.Printf("I'm attacking the entity at %f, %f\n", m.targetCoords.X, m.targetCoords.Y)
+}
+
+/*const (
 	Move EntityAction = iota
 	Melee
 	Stand
-)
+)*/
 
 type EntityTemplate struct {
 	viewRadius int
@@ -67,41 +95,26 @@ func (e *Entity) render() {
 
 func (e *Entity) update() {
 	entityAction := e.planner.planNextAction(e)
-
-	switch entityAction {
-	case Stand:
-		// Do nothing
-	case Move:
-		e.drawableEntity.mapCoords = targetCoords
-	case Melee:
-		fmt.Println("I'm attacking the entity!")
-	}
-
-	// Raise the cost of the cell the entity is currently on, assuming it's not the player
-	playerCoords := e.game.player.drawableEntity.mapCoords
-	entityCoords := e.drawableEntity.mapCoords
-	if !rl.Vector2Equals(playerCoords, entityCoords) {
-		e.game.pathGrid.Get(int(entityCoords.X), int(entityCoords.Y)).Cost += 5
-	}
+	entityAction.performAction(e)
 }
 
 func (e *Entity) getEntityActionForTarget(targetCoords rl.Vector2) EntityAction {
 	// Validate the target position is in bounds
 	if !e.game.gameMap.InBounds(int(targetCoords.X), int(targetCoords.Y)) {
-		return Stand
+		return &StandAction{}
 	}
 
 	// Validate the target position doesn't have an entity in it
 	for _, otherEntity := range e.game.gameMap.Entities {
 		if rl.Vector2Equals(targetCoords, otherEntity.drawableEntity.mapCoords) {
-			return Melee
+			return &MeleeAction{targetCoords: targetCoords}
 		}
 	}
 
 	// Validate the target position is walkable, assuming it's in bounds
 	targetIndex := e.game.gameMap.CoordToIndex(targetCoords)
 	if e.game.gameMap.Tiles[targetIndex].Walkable {
-		return Move
+		return &MoveAction{targetCoords: targetCoords}
 	}
-	return Stand
+	return &StandAction{}
 }
