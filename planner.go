@@ -45,5 +45,15 @@ type HostileEnemyPlanner struct {
 }
 
 func (h HostileEnemyPlanner) planNextAction(e *Entity) EntityAction {
-	return &StandAction{}
+	playerCoords := e.game.player.drawableEntity.mapCoords
+	playerCell := e.game.pathGrid.Get(int(playerCoords.X), int(playerCoords.Y))
+	entityCoords := e.drawableEntity.mapCoords
+	entityCell := e.game.pathGrid.Get(int(entityCoords.X), int(entityCoords.Y))
+
+	path := e.game.pathGrid.GetPathFromCells(entityCell, playerCell, true, false)
+	nextStep := path.Next()
+
+	nextAction := e.getEntityActionForTarget(rl.Vector2{X: float32(nextStep.X), Y: float32(nextStep.Y)})
+
+	return nextAction
 }

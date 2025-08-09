@@ -70,7 +70,7 @@ type Entity struct {
 	game              *Game
 	viewRadius        int
 	planner           Planner
-	drawableEntity    DrawableEntity
+	drawableEntity    *DrawableEntity
 	movementActionSet map[MovementAction]bool
 	maxHP             int
 	currentHP         int
