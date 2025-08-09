@@ -3,6 +3,7 @@ package main
 import (
 	rl "github.com/gen2brain/raylib-go/raylib"
 	fov "github.com/norendren/go-fov/fov"
+	paths "github.com/solarlune/paths"
 )
 
 const PLAYER_INPUT_COOLDOWN int = 4
@@ -26,6 +27,7 @@ type Game struct {
 	player                     *Entity
 	playerInputCooldownCounter int
 	gameMap                    *GameMap
+	pathGrid                   paths.Grid
 	camera                     rl.Camera2D
 	FOVCalc                    *fov.View
 	state                      GameState
