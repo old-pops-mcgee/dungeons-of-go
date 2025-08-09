@@ -27,7 +27,7 @@ type Game struct {
 	player                     *Entity
 	playerInputCooldownCounter int
 	gameMap                    *GameMap
-	pathGrid                   paths.Grid
+	pathGrid                   *paths.Grid
 	camera                     rl.Camera2D
 	FOVCalc                    *fov.View
 	state                      GameState
