@@ -63,7 +63,9 @@ func (g *Game) render() {
 	rl.BeginMode2D(g.camera)
 	g.gameMap.render()
 	for _, i := range g.gameMap.Items {
-		i.render()
+		if g.player.FOVCalc.IsVisible(int(i.drawableEntity.mapCoords.X), int(i.drawableEntity.mapCoords.Y)) {
+			i.render()
+		}
 	}
 	for _, e := range g.gameMap.Entities {
 		if g.player.FOVCalc.IsVisible(int(e.drawableEntity.mapCoords.X), int(e.drawableEntity.mapCoords.Y)) {
@@ -81,6 +83,7 @@ func (g *Game) update() {
 		// Check to see if we should still be playing
 		if *g.player.currentHP <= 0 {
 			g.state = WaitingToPlay
+			g.gameMap.Items = append(g.gameMap.Items, *Corpse.Spawn(g, g.player.drawableEntity.mapCoords))
 			fmt.Println("You died")
 		} else {
 			// Update the player
@@ -99,6 +102,8 @@ func (g *Game) update() {
 			e.update()
 			if *e.currentHP > 0 {
 				newEntities = append(newEntities, e)
+			} else {
+				g.gameMap.Items = append(g.gameMap.Items, *Corpse.Spawn(g, e.drawableEntity.mapCoords))
 			}
 		}
 		// Update the enemies
