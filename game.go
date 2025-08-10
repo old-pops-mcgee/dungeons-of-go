@@ -75,10 +75,14 @@ func (g *Game) update() {
 
 	// Update the enemies
 	if g.state == Playing {
+		newEntities := []Entity{}
 		for _, e := range g.gameMap.Entities {
-
 			e.update()
+			if *e.currentHP > 0 {
+				newEntities = append(newEntities, e)
+			}
 		}
+		g.gameMap.Entities = newEntities
 	}
 
 	// Update the camera

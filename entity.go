@@ -45,8 +45,8 @@ type MeleeAction struct {
 }
 
 func (m *MeleeAction) performAction(e *Entity) {
-	damage := int(math.Max(0, float64(e.power-m.targetEntity.defense)))
-	m.targetEntity.currentHP -= damage
+	damage := int(math.Max(0, float64(*e.power-*m.targetEntity.defense)))
+	*m.targetEntity.currentHP -= damage
 	fmt.Printf("Entity attacked for %d damage\n", damage)
 }
 
@@ -76,10 +76,10 @@ type Entity struct {
 	planner           Planner
 	drawableEntity    *DrawableEntity
 	movementActionSet map[MovementAction]bool
-	maxHP             int
-	currentHP         int
-	defense           int
-	power             int
+	maxHP             *int
+	currentHP         *int
+	defense           *int
+	power             *int
 	isPlayer          bool
 	FOVCalc           *fov.View
 }
@@ -91,10 +91,10 @@ func initEntity(g *Game, m rl.Vector2, gl Glyph, t color.RGBA, pl Planner, vr in
 		planner:           pl,
 		drawableEntity:    initDrawableEntity(g, m, gl, t),
 		movementActionSet: map[MovementAction]bool{},
-		maxHP:             mh,
-		currentHP:         mh,
-		defense:           d,
-		power:             p,
+		maxHP:             &mh,
+		currentHP:         &mh,
+		defense:           &d,
+		power:             &p,
 		isPlayer:          false,
 		FOVCalc:           fov.New(),
 	}
