@@ -32,6 +32,7 @@ type Game struct {
 	pathGrid                   *paths.Grid
 	camera                     rl.Camera2D
 	state                      GameState
+	handler                    Handler
 }
 
 func initGame() Game {
@@ -50,6 +51,7 @@ func initGame() Game {
 		Rotation: 0,
 		Zoom:     cameraZoom,
 	}
+	game.handler = &GameHandler{game: &game}
 	return game
 }
 
@@ -118,18 +120,16 @@ func (g *Game) update() {
 }
 
 func (g *Game) handleInput() {
-	if g.playerInputCooldownCounter <= 0 {
+	switch g.state {
+	case WaitingForInput:
 		processedKey := false
-		for key, action := range MOVEMENT_KEYS {
-			if rl.IsKeyDown(key) {
-				g.player.movementActionSet[action] = true
-				processedKey = true
-				g.state = Playing
-			}
+		if g.playerInputCooldownCounter <= 0 {
+			processedKey = g.handler.handleInput()
 		}
 
 		// If we processed a key, reset the cooldown timer
 		if processedKey {
+			g.state = Playing
 			g.playerInputCooldownCounter = PLAYER_INPUT_COOLDOWN
 		}
 	}
