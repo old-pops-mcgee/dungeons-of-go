@@ -1,6 +1,8 @@
 package main
 
 import (
+	"fmt"
+
 	rl "github.com/gen2brain/raylib-go/raylib"
 	paths "github.com/solarlune/paths"
 )
@@ -19,6 +21,7 @@ type GameState int
 const (
 	WaitingForInput GameState = iota
 	Playing
+	WaitingToPlay
 )
 
 type Game struct {
@@ -70,11 +73,24 @@ func (g *Game) render() {
 }
 
 func (g *Game) update() {
-	// Update the player
-	g.player.update()
+	switch g.state {
+	case WaitingForInput:
+		// Check to see if we should still be playing
+		if *g.player.currentHP <= 0 {
+			g.state = WaitingToPlay
+			fmt.Println("You died")
+		} else {
+			// Update the player
+			g.player.update()
 
-	// Update the enemies
-	if g.state == Playing {
+			// Update the camera
+			g.camera.Target = g.getCameraTarget()
+
+			// Update the cooldown timer
+			g.playerInputCooldownCounter = max(0, g.playerInputCooldownCounter-1)
+
+		}
+	case Playing:
 		newEntities := []Entity{}
 		for _, e := range g.gameMap.Entities {
 			e.update()
@@ -82,17 +98,15 @@ func (g *Game) update() {
 				newEntities = append(newEntities, e)
 			}
 		}
+		// Update the enemies
 		g.gameMap.Entities = newEntities
+
+		// Set the state to WaitingForInput to give player control
+		g.state = WaitingForInput
+	case WaitingToPlay:
+		// Do nothing
 	}
 
-	// Update the camera
-	g.camera.Target = g.getCameraTarget()
-
-	// Update the cooldown timer
-	g.playerInputCooldownCounter = max(0, g.playerInputCooldownCounter-1)
-
-	// Set the state to WaitingForInput to give player control
-	g.state = WaitingForInput
 }
 
 func (g *Game) handleInput() {
