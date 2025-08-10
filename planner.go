@@ -47,6 +47,10 @@ type HostileEnemyPlanner struct {
 func (h HostileEnemyPlanner) planNextAction(e *Entity) EntityAction {
 	playerCoords := e.game.player.drawableEntity.mapCoords
 	playerCell := e.game.pathGrid.Get(int(playerCoords.X), int(playerCoords.Y))
+
+	if !e.FOVCalc.IsVisible(int(playerCoords.X), int(playerCoords.Y)) {
+		return &StandAction{}
+	}
 	entityCoords := e.drawableEntity.mapCoords
 	entityCell := e.game.pathGrid.Get(int(entityCoords.X), int(entityCoords.Y))
 
