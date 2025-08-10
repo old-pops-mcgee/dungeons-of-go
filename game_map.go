@@ -14,6 +14,7 @@ type GameMap struct {
 	VisibleTiles  []bool
 	ExploredTiles []bool
 	Entities      []Entity
+	Items         []Item
 	Width         int
 	Height        int
 }

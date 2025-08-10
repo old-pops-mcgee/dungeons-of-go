@@ -62,6 +62,9 @@ func (g *Game) render() {
 	rl.ClearBackground(rl.Black)
 	rl.BeginMode2D(g.camera)
 	g.gameMap.render()
+	for _, i := range g.gameMap.Items {
+		i.render()
+	}
 	for _, e := range g.gameMap.Entities {
 		if g.player.FOVCalc.IsVisible(int(e.drawableEntity.mapCoords.X), int(e.drawableEntity.mapCoords.Y)) {
 			e.render()
