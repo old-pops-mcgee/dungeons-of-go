@@ -14,6 +14,7 @@ type GameMap struct {
 	VisibleTiles  []bool
 	ExploredTiles []bool
 	Entities      []Entity
+	Items         []Item
 	Width         int
 	Height        int
 }
@@ -66,9 +67,9 @@ func (g *GameMap) PlaceEntities(r RectangularRoom, m int) {
 
 		if !entityCollides {
 			if rand.Float32() < 0.8 {
-				g.Entities = append(g.Entities, *initEntity(g.game, entityMapCoords, GoblinGlyph, rl.Lime))
+				g.Entities = append(g.Entities, *Goblin.Spawn(g.game, entityMapCoords))
 			} else {
-				g.Entities = append(g.Entities, *initEntity(g.game, entityMapCoords, TrollGlyph, rl.DarkGreen))
+				g.Entities = append(g.Entities, *Troll.Spawn(g.game, entityMapCoords))
 			}
 		}
 	}
@@ -83,7 +84,7 @@ func (g *GameMap) render() {
 		mapCoords := g.IndexToCoord(index)
 
 		if math.Abs(float64(playerCoords.X-mapCoords.X)) <= viewportWidthBuffer && math.Abs(float64(playerCoords.Y-mapCoords.Y)) <= viewportHeightBuffer {
-			if g.game.FOVCalc.IsVisible(int(mapCoords.X), int(mapCoords.Y)) {
+			if g.game.player.FOVCalc.IsVisible(int(mapCoords.X), int(mapCoords.Y)) {
 				RenderTileBasedGraphic(g.game, tile.LightGraphic.TileGlyph, mapCoords, tile.LightGraphic.FGColor)
 				g.ExploredTiles[index] = true
 			} else if g.ExploredTiles[index] {

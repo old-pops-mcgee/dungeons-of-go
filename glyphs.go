@@ -12,3 +12,6 @@ var WallGlyph Glyph = Glyph{GX: 3, GY: 2}   // #
 // Enemy glyphs
 var TrollGlyph Glyph = Glyph{GX: 4, GY: 5}  // T
 var GoblinGlyph Glyph = Glyph{GX: 7, GY: 6} // g
+
+// Item glyphs
+var CorpseGlyph Glyph = Glyph{GX: 5, GY: 2} // %

@@ -16,8 +16,8 @@ type DrawableEntity struct {
 	tint      color.RGBA
 }
 
-func initDrawableEntity(g *Game, m rl.Vector2, gl Glyph, t color.RGBA) DrawableEntity {
-	return DrawableEntity{
+func initDrawableEntity(g *Game, m rl.Vector2, gl Glyph, t color.RGBA) *DrawableEntity {
+	return &DrawableEntity{
 		game:      g,
 		mapCoords: m,
 		glyph:     gl,

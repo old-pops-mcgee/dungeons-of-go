@@ -3,31 +3,100 @@ package main
 import (
 	"fmt"
 	"image/color"
+	"math"
 
 	rl "github.com/gen2brain/raylib-go/raylib"
+	fov "github.com/norendren/go-fov/fov"
 )
 
-type EntityAction int
+type EntityAction interface {
+	performAction(e *Entity)
+}
 
-const (
-	Move EntityAction = iota
-	Melee
-	Stand
+type MoveAction struct {
+	targetCoords rl.Vector2
+}
+
+func NewMoveAction(target rl.Vector2) MoveAction {
+	return MoveAction{targetCoords: target}
+}
+
+func (m *MoveAction) performAction(e *Entity) {
+	if !e.isPlayer {
+		entityCell := e.game.pathGrid.Get(int(e.drawableEntity.mapCoords.X), int(e.drawableEntity.mapCoords.Y))
+		if entityCell.Cost >= 6 {
+			entityCell.Cost -= 5
+		}
+
+		targetCell := e.game.pathGrid.Get(int(m.targetCoords.X), int(m.targetCoords.Y))
+		targetCell.Cost += 5
+	}
+	e.drawableEntity.mapCoords = m.targetCoords
+}
+
+type StandAction struct{}
+
+func (s *StandAction) performAction(e *Entity) {
+	// Do nothing
+}
+
+type MeleeAction struct {
+	targetEntity *Entity
+}
+
+func (m *MeleeAction) performAction(e *Entity) {
+	damage := int(math.Max(0, float64(*e.power-*m.targetEntity.defense)))
+	*m.targetEntity.currentHP -= damage
+	fmt.Printf("Entity attacked for %d damage\n", damage)
+}
+
+type EntityTemplate struct {
+	viewRadius int
+	glyph      Glyph
+	color      color.RGBA
+	planner    Planner
+	maxHP      int
+	defense    int
+	power      int
+}
+
+var (
+	Player = EntityTemplate{viewRadius: 6, glyph: PlayerGlyph, color: rl.White, planner: PlayerPlanner{}, maxHP: 30, defense: 2, power: 5}
+	Troll  = EntityTemplate{viewRadius: 4, glyph: TrollGlyph, color: rl.DarkGreen, planner: HostileEnemyPlanner{}, maxHP: 16, defense: 1, power: 4}
+	Goblin = EntityTemplate{viewRadius: 6, glyph: GoblinGlyph, color: rl.Lime, planner: HostileEnemyPlanner{}, maxHP: 10, defense: 0, power: 3}
 )
+
+func (e *EntityTemplate) Spawn(g *Game, m rl.Vector2) *Entity {
+	return initEntity(g, m, e.glyph, e.color, e.planner, e.viewRadius, e.maxHP, e.defense, e.power)
+}
 
 type Entity struct {
 	game              *Game
 	viewRadius        int
-	drawableEntity    DrawableEntity
+	planner           Planner
+	drawableEntity    *DrawableEntity
 	movementActionSet map[MovementAction]bool
+	maxHP             *int
+	currentHP         *int
+	defense           *int
+	power             *int
+	isPlayer          bool
+	FOVCalc           *fov.View
 }
 
-func initEntity(g *Game, m rl.Vector2, gl Glyph, t color.RGBA) *Entity {
+func initEntity(g *Game, m rl.Vector2, gl Glyph, t color.RGBA, pl Planner, vr int, mh int, d int, p int) *Entity {
 	return &Entity{
 		game:              g,
-		viewRadius:        6,
+		viewRadius:        vr,
+		planner:           pl,
 		drawableEntity:    initDrawableEntity(g, m, gl, t),
 		movementActionSet: map[MovementAction]bool{},
+		maxHP:             &mh,
+		currentHP:         &mh,
+		defense:           &d,
+		power:             &p,
+		isPlayer:          false,
+		FOVCalc:           fov.New(),
 	}
 }
 
@@ -36,56 +105,35 @@ func (e *Entity) render() {
 }
 
 func (e *Entity) update() {
-	var movementDelta MovementDelta
+	entityAction := e.planner.planNextAction(e)
+	entityAction.performAction(e)
 
-	// Process movements from each movement action
-	for movement := range e.movementActionSet {
-		tempMovementDelta := MOVEMENT_DELTAS[movement]
-		movementDelta.dx += tempMovementDelta.dx
-		movementDelta.dy += tempMovementDelta.dy
-
-		// Clear the movement from the action set
-		delete(e.movementActionSet, movement)
-	}
-
-	// Clamp the movement deltas to ensure we don't process to big a step
-	movementDelta.dx = int(rl.Clamp(float32(movementDelta.dx), -1, 1))
-	movementDelta.dy = int(rl.Clamp(float32(movementDelta.dy), -1, 1))
-
-	// Find the target coordinates
-	targetCoords := e.drawableEntity.mapCoords
-	targetCoords.X += float32(movementDelta.dx)
-	targetCoords.Y += float32(movementDelta.dy)
-
-	entityAction := e.getEntityActionForTarget(targetCoords)
-
-	switch entityAction {
-	case Stand:
-		// Do nothing
-	case Move:
-		e.drawableEntity.mapCoords = targetCoords
-	case Melee:
-		fmt.Println("I'm attacking the entity!")
-	}
+	// Update the FOV
+	e.FOVCalc.Compute(e.game.gameMap, int(e.drawableEntity.mapCoords.X), int(e.drawableEntity.mapCoords.Y), e.viewRadius)
 }
 
 func (e *Entity) getEntityActionForTarget(targetCoords rl.Vector2) EntityAction {
 	// Validate the target position is in bounds
 	if !e.game.gameMap.InBounds(int(targetCoords.X), int(targetCoords.Y)) {
-		return Stand
+		return &StandAction{}
 	}
 
 	// Validate the target position doesn't have an entity in it
 	for _, otherEntity := range e.game.gameMap.Entities {
 		if rl.Vector2Equals(targetCoords, otherEntity.drawableEntity.mapCoords) {
-			return Melee
+			return &MeleeAction{targetEntity: &otherEntity}
 		}
+	}
+
+	// Validate the target position isn't the player (relevant for non-player entities)
+	if !e.isPlayer && rl.Vector2Equals(targetCoords, e.game.player.drawableEntity.mapCoords) {
+		return &MeleeAction{targetEntity: e.game.player}
 	}
 
 	// Validate the target position is walkable, assuming it's in bounds
 	targetIndex := e.game.gameMap.CoordToIndex(targetCoords)
 	if e.game.gameMap.Tiles[targetIndex].Walkable {
-		return Move
+		return &MoveAction{targetCoords: targetCoords}
 	}
-	return Stand
+	return &StandAction{}
 }

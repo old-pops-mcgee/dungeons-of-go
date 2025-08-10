@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	rl "github.com/gen2brain/raylib-go/raylib"
-	fov "github.com/norendren/go-fov/fov"
+	paths "github.com/solarlune/paths"
 )
 
 const PLAYER_INPUT_COOLDOWN int = 4
@@ -21,6 +21,7 @@ type GameState int
 const (
 	WaitingForInput GameState = iota
 	Playing
+	WaitingToPlay
 )
 
 type Game struct {
@@ -28,9 +29,10 @@ type Game struct {
 	player                     *Entity
 	playerInputCooldownCounter int
 	gameMap                    *GameMap
+	pathGrid                   *paths.Grid
 	camera                     rl.Camera2D
-	FOVCalc                    *fov.View
 	state                      GameState
+	handler                    Handler
 }
 
 func initGame() Game {
@@ -39,7 +41,8 @@ func initGame() Game {
 		spritesheet:                rl.LoadTexture("assets/16x16-RogueYun-AgmEdit.png"),
 		state:                      WaitingForInput,
 	}
-	game.player = initEntity(&game, rl.Vector2{X: 25, Y: 20}, PlayerGlyph, rl.White)
+	game.player = Player.Spawn(&game, rl.Vector2{X: 25, Y: 20})
+	game.player.isPlayer = true
 	// This function assigns the new dungeon to the game map
 	GenerateDungeon(&game, maxRooms, maxMonstersPerRoom, roomMaxSize, roomMinSize, GridWidth, GridHeight)
 	game.camera = rl.Camera2D{
@@ -48,7 +51,7 @@ func initGame() Game {
 		Rotation: 0,
 		Zoom:     cameraZoom,
 	}
-	game.FOVCalc = fov.New()
+	game.handler = &GameHandler{game: &game}
 	return game
 }
 
@@ -61,8 +64,13 @@ func (g *Game) render() {
 	rl.ClearBackground(rl.Black)
 	rl.BeginMode2D(g.camera)
 	g.gameMap.render()
+	for _, i := range g.gameMap.Items {
+		if g.player.FOVCalc.IsVisible(int(i.drawableEntity.mapCoords.X), int(i.drawableEntity.mapCoords.Y)) {
+			i.render()
+		}
+	}
 	for _, e := range g.gameMap.Entities {
-		if g.FOVCalc.IsVisible(int(e.drawableEntity.mapCoords.X), int(e.drawableEntity.mapCoords.Y)) {
+		if g.player.FOVCalc.IsVisible(int(e.drawableEntity.mapCoords.X), int(e.drawableEntity.mapCoords.Y)) {
 			e.render()
 		}
 	}
@@ -72,42 +80,56 @@ func (g *Game) render() {
 }
 
 func (g *Game) update() {
-	// Update the player
-	g.player.update()
+	switch g.state {
+	case WaitingForInput:
+		// Check to see if we should still be playing
+		if *g.player.currentHP <= 0 {
+			g.state = WaitingToPlay
+			g.gameMap.Items = append(g.gameMap.Items, *Corpse.Spawn(g, g.player.drawableEntity.mapCoords))
+			fmt.Println("You died")
+		} else {
+			// Update the player
+			g.player.update()
 
-	// Update the enemies
-	if g.state == Playing {
-		for i := range g.gameMap.Entities {
-			fmt.Printf("Entity %d is contemplating its turn\n", i)
+			// Update the camera
+			g.camera.Target = g.getCameraTarget()
+
+			// Update the cooldown timer
+			g.playerInputCooldownCounter = max(0, g.playerInputCooldownCounter-1)
+
 		}
+	case Playing:
+		newEntities := []Entity{}
+		for _, e := range g.gameMap.Entities {
+			e.update()
+			if *e.currentHP > 0 {
+				newEntities = append(newEntities, e)
+			} else {
+				g.gameMap.Items = append(g.gameMap.Items, *Corpse.Spawn(g, e.drawableEntity.mapCoords))
+			}
+		}
+		// Update the enemies
+		g.gameMap.Entities = newEntities
+
+		// Set the state to WaitingForInput to give player control
+		g.state = WaitingForInput
+	case WaitingToPlay:
+		// Do nothing
 	}
 
-	// Update the FOV
-	g.FOVCalc.Compute(g.gameMap, int(g.player.drawableEntity.mapCoords.X), int(g.player.drawableEntity.mapCoords.Y), g.player.viewRadius)
-
-	// Update the camera
-	g.camera.Target = g.getCameraTarget()
-
-	// Update the cooldown timer
-	g.playerInputCooldownCounter = max(0, g.playerInputCooldownCounter-1)
-
-	// Set the state to WaitingForInput to give player control
-	g.state = WaitingForInput
 }
 
 func (g *Game) handleInput() {
-	if g.playerInputCooldownCounter <= 0 {
+	switch g.state {
+	case WaitingForInput:
 		processedKey := false
-		for key, action := range MOVEMENT_KEYS {
-			if rl.IsKeyDown(key) {
-				g.player.movementActionSet[action] = true
-				processedKey = true
-				g.state = Playing
-			}
+		if g.playerInputCooldownCounter <= 0 {
+			processedKey = g.handler.handleInput()
 		}
 
 		// If we processed a key, reset the cooldown timer
 		if processedKey {
+			g.state = Playing
 			g.playerInputCooldownCounter = PLAYER_INPUT_COOLDOWN
 		}
 	}
