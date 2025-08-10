@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"image/color"
+	"math"
 
 	rl "github.com/gen2brain/raylib-go/raylib"
 	fov "github.com/norendren/go-fov/fov"
@@ -40,11 +41,13 @@ func (s *StandAction) performAction(e *Entity) {
 }
 
 type MeleeAction struct {
-	targetCoords rl.Vector2
+	targetEntity *Entity
 }
 
 func (m *MeleeAction) performAction(e *Entity) {
-	fmt.Printf("I'm attacking the entity at %f, %f\n", m.targetCoords.X, m.targetCoords.Y)
+	damage := int(math.Max(0, float64(e.power-m.targetEntity.defense)))
+	m.targetEntity.currentHP -= damage
+	fmt.Printf("Entity attacked for %d damage\n", damage)
 }
 
 type EntityTemplate struct {
@@ -118,13 +121,13 @@ func (e *Entity) getEntityActionForTarget(targetCoords rl.Vector2) EntityAction 
 	// Validate the target position doesn't have an entity in it
 	for _, otherEntity := range e.game.gameMap.Entities {
 		if rl.Vector2Equals(targetCoords, otherEntity.drawableEntity.mapCoords) {
-			return &MeleeAction{targetCoords: targetCoords}
+			return &MeleeAction{targetEntity: &otherEntity}
 		}
 	}
 
 	// Validate the target position isn't the player (relevant for non-player entities)
 	if !e.isPlayer && rl.Vector2Equals(targetCoords, e.game.player.drawableEntity.mapCoords) {
-		return &MeleeAction{targetCoords: targetCoords}
+		return &MeleeAction{targetEntity: e.game.player}
 	}
 
 	// Validate the target position is walkable, assuming it's in bounds
